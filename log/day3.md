@@ -382,3 +382,9 @@ TODO
             xargonimages.debug_csv('debug.csv')
             xargonimages.save('output')
 ```
+
+A quick audit of the map tile groups show that there does not appear to be any inadvertent masking, so it looks like we're done decoding the image data. We have a full set of tiles and sprites that we can use to generate our tile map. There's a few parameters we didn't decode on each image record, but they do not appear to be totally necessary for our purposes.
+
+Here's a sample world map sprite with proper masking:
+
+![day3_3](images/day3_3.png)

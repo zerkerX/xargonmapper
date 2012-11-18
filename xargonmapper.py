@@ -1,0 +1,52 @@
+#!/usr/bin/python
+# Copyright 2012 Ryan Armstrong
+#
+# This file is part of Xargon Mapper Mapper.
+#
+# Xargon Mapper Mapper is free software: you can redistribute
+# it and/or modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# Xargon Mapper Mapper is distributed in the hope that it will
+# be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+# of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with Xargon Mapper Mapper.
+# If not, see <http://www.gnu.org/licenses/>.
+import sys
+from PIL import Image
+from xargonmap import xargonmap
+from xargongraphics import imagefile
+
+class xargonmapper(object):
+    def __init__(self, graphics, mapdata):
+        self.mappicture = Image.new("RGB", (128*16, 64*16) )
+        self.name = mapdata.name
+
+        for index, tileval in enumerate(mapdata.tiles):
+            # Remember: maps are height first
+            (x, y) = (index/64, index%64)
+            self.mappicture.paste(graphics.gettile(tileval),
+                (x*16, y*16) )
+
+    def save(self):
+        self.mappicture.save(self.name + '.png')
+
+
+if __name__ == "__main__":
+    if len(sys.argv) < 3:
+        print """Usage: python xargonmapper.py [Graphics File] [Map File(s)...]
+TODO
+"""
+    else:
+        xargonimages = imagefile(sys.argv[1])
+        for filename in sys.argv[2:]:
+            themap = xargonmap(filename)
+
+            print "Generating Map '{}'".format(themap.name)
+            mapper = xargonmapper(xargonimages, themap)
+            print "Saving Map '{}'".format(themap.name)
+            mapper.save()

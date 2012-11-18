@@ -26,15 +26,14 @@ class xargonmap(object):
         (temppath, tempfname) = os.path.split(filename)
         (self.name, tempext) = os.path.splitext(tempfname)
 
-        # Load the map data as a 98 x 98 array of 2-byte positions:
+        # Load the map data as a 64*128 array of 16 bit values:
         mapfile = open(filename, 'rb')
-        pattern = '<{}B'.format(64*128*2)
+        pattern = '<{}H'.format(64*128)
 
         tempdata = struct.unpack(pattern,
             mapfile.read(struct.calcsize(pattern)) )
 
-        self.tiles = [tileval for index, tileval in enumerate(tempdata) if index%2 == 0]
-        self.meta  = [tileval for index, tileval in enumerate(tempdata) if index%2 == 1]
+        self.tiles = [tileval for index, tileval in enumerate(tempdata)]
         mapfile.close()
 
     def debugcsv(self):
@@ -46,13 +45,16 @@ class xargonmap(object):
                 writer.writerow([self.tiles[x*64+y] for x in range(128)])
 
     def debugimage(self):
+        # Turn the map data into a list of 3-byte tuples to visualize it.
+        # Start by pre-creating an empty list of zeroes then copy it in
+        visualdata = [None] * (64*128)
+        for index in range(64*128):
+            visualdata[index] = (self.tiles[index]%256, self.tiles[index]/256, 0)
+
         # Tell PIL to interpret the map data as a RAW image:
-        mapimage1 = Image.new("L", (64, 128) )
-        mapimage1.putdata(self.tiles)
-        ImageOps.mirror(mapimage1.rotate(-90)).save(self.name + '_tile.png')
-        mapimage1 = Image.new("L", (64, 128) )
-        mapimage1.putdata(self.meta)
-        ImageOps.mirror(mapimage1.rotate(-90)).save(self.name + '_meta.png')
+        mapimage = Image.new("RGB", (64, 128) )
+        mapimage.putdata(visualdata)
+        mapimage.rotate(-90).save(self.name + '_flat.png')
 
 
 if __name__ == "__main__":

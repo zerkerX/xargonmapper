@@ -351,3 +351,90 @@ TODO
             themap.debugcsv()
             themap.debugimage()
 ```
+
+![day4_1](images/day4_1.png)
+
+Hold the phone. Those red squares are NOT tile data; they are providing 
+some other information about the map. So I think the real tile data 
+must what we are loading into the red layer (note the red squares vary 
+the shade of red), while the green layer must be something else. Let's 
+unroll this into two separate layers (and yes, switch back to loading 
+byte-by-byte).
+
+Updated class:
+```py
+class xargonmap(object):
+    def __init__(self, filename):
+        # Grab the map from the file name (sans ext)
+        # TODO: Maps may have embedded names. To consider
+        (temppath, tempfname) = os.path.split(filename)
+        (self.name, tempext) = os.path.splitext(tempfname)
+
+        # Load the map data as a 98 x 98 array of 2-byte positions:
+        mapfile = open(filename, 'rb')
+        pattern = '<{}B'.format(64*128*2)
+
+        tempdata = struct.unpack(pattern,
+            mapfile.read(struct.calcsize(pattern)) )
+
+        self.tiles = [tileval for index, tileval in enumerate(tempdata) if index%2 == 0]
+        self.meta  = [tileval for index, tileval in enumerate(tempdata) if index%2 == 1]
+        mapfile.close()
+
+    def debugcsv(self):
+        # Remember that the map is height-first. We need to convert to
+        # width-first
+        pass
+
+    def debugimage(self):
+        # Tell PIL to interpret the map data as a RAW image:
+        mapimage1 = Image.new("L", (64, 128) )
+        mapimage1.putdata(self.tiles)
+        mapimage1.rotate(-90).save(self.name + '_tile.png')
+        mapimage1 = Image.new("L", (64, 128) )
+        mapimage1.putdata(self.meta)
+        mapimage1.rotate(-90).save(self.name + '_meta.png')
+```
+
+And images:
+
+![day4_2](images/day4_2.png)
+
+Now to add the CSV routine. Note that we need to convert to a 
+row-oriented format for this to work (yay, more list comprehensions):
+
+```py
+def debugcsv(self):
+    # Remember that the map is height-first. We need to convert to
+    # width-first. This only outputs tile data for now.
+    with open(self.name + '.csv', 'wb') as csvfile:
+        writer = csv.writer(csvfile)
+        for y in range(64):
+            writer.writerow([self.tiles[x*64+y] for x in range(128)])
+```
+
+Hrm, I may have forgotten to properly compensate for height-first when 
+generating the images. I think I need to also flip them horizontally as 
+well as rotating. They appear backwards to the CSV output. Let me 
+sanity check by jumping in game quickly and confirming the stage 
+layout.
+
+Yup. Fixing that below:
+
+```py
+    def debugimage(self):
+        # Tell PIL to interpret the map data as a RAW image:
+        mapimage1 = Image.new("L", (64, 128) )
+        mapimage1.putdata(self.tiles)
+        ImageOps.mirror(mapimage1.rotate(-90)).save(self.name + '_tile.png')
+        mapimage1 = Image.new("L", (64, 128) )
+        mapimage1.putdata(self.meta)
+        ImageOps.mirror(mapimage1.rotate(-90)).save(self.name + '_meta.png')
+```
+
+I guess we didn't get to actually start the mapping today. However, we 
+have all the information we need to get started on that tomorrow. 
+[day4.zip][day4] is available for anyone who wants the scripts and debug map 
+data we generated today.
+
+[day4]: http://www.zerker.ca/misc/xargon/day4.zip

@@ -17,7 +17,7 @@
 # with Xargon Mapper Mapper.
 # If not, see <http://www.gnu.org/licenses/>.
 import struct, sys, os, pdb, csv
-from PIL import Image
+from PIL import Image, ImageFont, ImageDraw
 
 def createpath(pathname):
     """ Simple utility method for creating a path only if it does
@@ -27,6 +27,19 @@ def createpath(pathname):
         os.mkdir(pathname)
 
 class imagefile(object):
+    debugfont = ImageFont.truetype("DroidSans.ttf", 8)
+
+    @staticmethod
+    def debugimage(index):
+        """ Creates a 16x16 debug image for tiles """
+        colour = (index%256, index/256, 0)
+        tempimage = Image.new("RGBA", (16, 16), colour)
+        textcolor = (255, 255, 255) if colour[0] < 96 and colour[1] < 96 else (0, 0, 0)
+        pen = ImageDraw.Draw(tempimage)
+        pen.text((4, 0), '{:02X}'.format(index/256), font=imagefile.debugfont, fill=textcolor)
+        pen.text((4, 8), '{:02X}'.format(index%256), font=imagefile.debugfont, fill=textcolor)
+        return tempimage
+
     def __init__(self, filename):
         filesize = os.path.getsize(filename)
         graphicsfile = open(filename, 'rb')
@@ -48,8 +61,7 @@ class imagefile(object):
         palettealt = self.records[5].getpalette()
         palette2 = self.records[53].getpalette()
 
-        # Load "ma
-
+        # Load the image data
         for recnum, record in enumerate(self.records):
             if recnum == 53:
                 record.loadimages(palette2, skipimages=1)
@@ -58,6 +70,33 @@ class imagefile(object):
             else:
                 record.loadimages(palette1, skipimages=1)
 
+        # Group by map tile:
+        self.tilelookup = [self.debugimage( index )
+            for index in range(65535) ]
+
+    def gettile(self, tilenum):
+        if tilenum == 0xC000:
+            return self.records[9].images[15]
+        elif tilenum == 0xC001:
+            return self.records[8].images[24]
+        elif tilenum >= 0xC002 and tilenum <=0xC005:
+            return self.records[8].images[tilenum-0xC002]
+        elif tilenum >= 0xC007 and tilenum <=0xC00A:
+            return self.records[8].images[tilenum-0xC003]
+        elif tilenum >= 0xC1AF and tilenum <=0xC1B3:
+            return self.records[14].images[tilenum-0xC1AF+18]
+        elif tilenum >= 0xC0F5 and tilenum <=0xC0F6:
+            return self.records[25].images[tilenum-0xC0F5+2]
+        elif tilenum >= 0xC0D3 and tilenum <=0xC0D6:
+            return self.records[25].images[tilenum-0xC0D3+9]
+        elif tilenum >= 0xC2DE and tilenum <=0xC2DF:
+            return self.records[25].images[tilenum-0xC2DE+13]
+        elif tilenum >= 0xC2E2 and tilenum <=0xC2E3:
+            return self.records[25].images[tilenum-0xC2E2+19]
+        elif tilenum >= 0xC2EE and tilenum <=0xC2F1:
+            return self.records[25].images[tilenum-0xC2EE+31]
+        else:
+            return self.tilelookup[tilenum]
 
     def debug_csv(self, filename):
         with open(filename, 'wb') as csvfile:
@@ -100,7 +139,7 @@ class imagerecord(object):
 
         if offset > 0:
             filedata.seek(offset)
-            headerstruct = '<12B'
+            headerstruct = '<B4H3B'
             self.header = struct.unpack(headerstruct,
                 filedata.read(struct.calcsize(headerstruct)) )
 
