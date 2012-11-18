@@ -1,0 +1,6 @@
+BOARD*
+dates
+*.csv
+*.ods
+*.pyc
+out.txt
