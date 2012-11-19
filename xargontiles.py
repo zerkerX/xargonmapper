@@ -27,15 +27,30 @@ class tilefile(object):
         infile = open(filename, 'rb')
 
         self.tiles = []
+        self.lookup = {}
 
         commonheader = '<3HB'
         while infile.tell() < filesize:
             headerdata = struct.unpack(commonheader,
                 infile.read(struct.calcsize(commonheader)) )
             stringlen = headerdata[3]
-            print headerdata
             self.tiles.append(headerdata[0:3] +
                 struct.unpack('<{}s'.format(stringlen), infile.read(stringlen)) )
+
+            self.lookup[headerdata[0]] = headerdata[1]
+
+    neg1mapping = {8: (8, 24), 10: (10, 3)}
+
+    def gettile(self, graphics, tilenum):
+        if tilenum < 0xC000:
+            graphindex = self.lookup[tilenum]
+        else:
+            graphindex = self.lookup[tilenum - 0xC000]
+
+        recnum = graphindex / 256 - 64
+        recindex = graphindex % 256
+
+        return graphics.records[recnum].images[recindex]
 
     def debug_csv(self, filename):
         with open(filename, 'wb') as csvfile:

@@ -20,16 +20,17 @@ import sys
 from PIL import Image
 from xargonmap import xargonmap
 from xargongraphics import imagefile
+from xargontiles import tilefile
 
 class xargonmapper(object):
-    def __init__(self, graphics, mapdata):
+    def __init__(self, graphics, tiledata, mapdata):
         self.mappicture = Image.new("RGB", (128*16, 64*16) )
         self.name = mapdata.name
 
         for index, tileval in enumerate(mapdata.tiles):
             # Remember: maps are height first
             (x, y) = (index/64, index%64)
-            self.mappicture.paste(graphics.gettile(tileval),
+            self.mappicture.paste(tiledata.gettile(graphics, tileval),
                 (x*16, y*16) )
 
     def save(self):
@@ -38,15 +39,16 @@ class xargonmapper(object):
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print """Usage: python xargonmapper.py [Graphics File] [Map File(s)...]
+        print """Usage: python xargonmapper.py [Graphics File] [Tiles File] [Map File(s)...]
 TODO
 """
     else:
         xargonimages = imagefile(sys.argv[1])
-        for filename in sys.argv[2:]:
+        tiledata = tilefile(sys.argv[2])
+        for filename in sys.argv[3:]:
             themap = xargonmap(filename)
 
             print "Generating Map '{}'".format(themap.name)
-            mapper = xargonmapper(xargonimages, themap)
+            mapper = xargonmapper(xargonimages, tiledata, themap)
             print "Saving Map '{}'".format(themap.name)
             mapper.save()
