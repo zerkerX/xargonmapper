@@ -16,13 +16,12 @@
 # You should have received a copy of the GNU General Public License along
 # with Xargon Mapper Mapper.
 # If not, see <http://www.gnu.org/licenses/>.
-import struct, sys, os, csv
+import struct, sys, os, csv, pdb
 from PIL import Image, ImageOps
 
 class xargonmap(object):
     def __init__(self, filename):
         # Grab the map from the file name (sans ext)
-        # TODO: Maps may have embedded names. To consider
         (temppath, tempfname) = os.path.split(filename)
         (self.name, tempext) = os.path.splitext(tempfname)
 
@@ -30,11 +29,34 @@ class xargonmap(object):
         mapfile = open(filename, 'rb')
         pattern = '<{}H'.format(64*128)
 
-        tempdata = struct.unpack(pattern,
+        self.tiles = struct.unpack(pattern,
             mapfile.read(struct.calcsize(pattern)) )
 
-        self.tiles = [tileval for index, tileval in enumerate(tempdata)]
+        # Decode the object header then the object list
+        objheader = '<HBH'
+        objrecord = '<11H2B2HBH'
+
+        (numobjs, blank, self.unknown) = struct.unpack(objheader,
+            mapfile.read(struct.calcsize(objheader)) )
+
+        self.objs = [struct.unpack(objrecord,
+            mapfile.read(struct.calcsize(objrecord)) )
+            for i in range(numobjs)]
+
+        # There always appears to be a 0x5E spacer region
+        mapfile.read(0x5E)
+
+        # Capture any strings until the end of the file
+        self.strings = []
+        sizebytes = mapfile.read(2)
+        while (len(sizebytes) == 2):
+            (stringlen,) = struct.unpack('<H', sizebytes)
+            self.strings.append(mapfile.read(stringlen))
+            mapfile.read(1)
+            sizebytes = mapfile.read(2)
+
         mapfile.close()
+
 
     def debugcsv(self):
         # Remember that the map is height-first. We need to convert to
@@ -43,6 +65,16 @@ class xargonmap(object):
             writer = csv.writer(csvfile)
             for y in range(64):
                 writer.writerow([self.tiles[x*64+y] for x in range(128)])
+
+        # Next, output the object list:
+        with open(self.name + '_objs.csv', 'wb') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerows(self.objs)
+
+        # Finally, the header and strings list:
+        with open(self.name + '_info.csv', 'wb') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow([self.unknown] + self.strings)
 
     def debugimage(self):
         # Turn the map data into a list of 3-byte tuples to visualize it.
@@ -54,12 +86,12 @@ class xargonmap(object):
         # Tell PIL to interpret the map data as a RAW image:
         mapimage = Image.new("RGB", (64, 128) )
         mapimage.putdata(visualdata)
-        mapimage.rotate(-90).save(self.name + '_flat.png')
+        ImageOps.mirror(mapimage.rotate(-90)).save(self.name + '_flat.png')
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print """Usage: python xargonmap.py [Map File]
+        print """Usage: python xargonmap.py [Map File(s)]
 TODO
 """
     else:
