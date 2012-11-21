@@ -1,4 +1,5 @@
-BOARD*
+BOARD*.png
+MAP*.png
 dates
 *.csv
 *.ods

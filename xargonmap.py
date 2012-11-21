@@ -33,18 +33,19 @@ class xargonmap(object):
             mapfile.read(struct.calcsize(pattern)) )
 
         # Decode the object header then the object list
-        objheader = '<HBH'
-        objrecord = '<11H2B2HBH'
+        objrecord = '<B12h2B2H'
 
-        (numobjs, blank, self.unknown) = struct.unpack(objheader,
-            mapfile.read(struct.calcsize(objheader)) )
+        (numobjs,) = struct.unpack('<H', mapfile.read(2) )
 
         self.objs = [struct.unpack(objrecord,
             mapfile.read(struct.calcsize(objrecord)) )
             for i in range(numobjs)]
 
-        # There always appears to be a 0x5E spacer region
-        mapfile.read(0x5E)
+        # There always appears to be a 0x61 byte unknown region between
+        # the records and strings. Let's just collect it as bytes for now.
+        unknownregion = '<97B'
+        self.unknown = struct.unpack(unknownregion,
+            mapfile.read(struct.calcsize(unknownregion)) )
 
         # Capture any strings until the end of the file
         self.strings = []
@@ -74,7 +75,7 @@ class xargonmap(object):
         # Finally, the header and strings list:
         with open(self.name + '_info.csv', 'wb') as csvfile:
             writer = csv.writer(csvfile)
-            writer.writerow([self.unknown] + self.strings)
+            writer.writerow(list(self.unknown) + self.strings)
 
     def debugimage(self):
         # Turn the map data into a list of 3-byte tuples to visualize it.

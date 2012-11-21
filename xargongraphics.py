@@ -30,14 +30,19 @@ class imagefile(object):
     debugfont = ImageFont.truetype("DroidSans.ttf", 12)
 
     @staticmethod
-    def debugimage(index):
-        """ Creates a 16x16 debug image for tiles """
-        colour = (index, index, index)
-        tempimage = Image.new("RGBA", (16, 16), colour)
-        textcolor = (255, 255, 255) if index < 96 else (0, 0, 0)
-        pen = ImageDraw.Draw(tempimage)
-        pen.text((1, 2), '{:02}'.format(index), font=imagefile.debugfont, fill=textcolor)
-        return tempimage
+    def debugimage(index, width, height):
+        """ Creates a debug image for sprites """
+        if width > 0 and height > 0:
+            colour = (index, index, index)
+            tempimage = Image.new("RGBA", (width, height), colour)
+            textcolor = (255, 255, 255) if index < 96 else (0, 0, 0)
+            pen = ImageDraw.Draw(tempimage)
+            pen.text((width/2 - 7, height/2 - 6), '{:02}'.format(index),
+                font=imagefile.debugfont, fill=textcolor)
+            return tempimage
+        else:
+            # 1 pixel transparent image
+            return Image.new("RGBA", (width, height))
 
     def __init__(self, filename):
         filesize = os.path.getsize(filename)
@@ -68,10 +73,6 @@ class imagefile(object):
                 record.loadimages(palette1, skipimages=1)
             else:
                 record.loadimages(palette1)
-
-        # Debug Map Tile storage
-        self.unknown = [self.debugimage( index )
-            for index in range(256) ]
 
     def debug_csv(self, filename):
         with open(filename, 'wb') as csvfile:

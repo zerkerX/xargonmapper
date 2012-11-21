@@ -21,9 +21,10 @@ from PIL import Image
 from xargonmap import xargonmap
 from xargongraphics import imagefile
 from xargontiles import tilefile
+from spritedb import spritedb
 
 class xargonmapper(object):
-    def __init__(self, graphics, tiledata, mapdata):
+    def __init__(self, graphics, tiledata, sprites, mapdata):
         self.mappicture = Image.new("RGB", (128*16, 64*16) )
         self.name = mapdata.name
 
@@ -32,6 +33,11 @@ class xargonmapper(object):
             (x, y) = (index/64, index%64)
             self.mappicture.paste(tiledata.gettile(graphics, tileval),
                 (x*16, y*16) )
+
+        maptype = 1 if self.name.lower() in ['map', 'board_t'] else 0
+
+        for objrecord in mapdata.objs:
+            sprites.drawsprite(self.mappicture, objrecord, maptype)
 
     def save(self):
         self.mappicture.save(self.name + '.png')
@@ -44,11 +50,12 @@ TODO
 """
     else:
         xargonimages = imagefile(sys.argv[1])
+        sprites = spritedb(xargonimages)
         tiledata = tilefile(sys.argv[2])
         for filename in sys.argv[3:]:
             themap = xargonmap(filename)
 
             print "Generating Map '{}'".format(themap.name)
-            mapper = xargonmapper(xargonimages, tiledata, themap)
+            mapper = xargonmapper(xargonimages, tiledata, sprites, themap)
             print "Saving Map '{}'".format(themap.name)
             mapper.save()
