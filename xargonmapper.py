@@ -34,10 +34,8 @@ class xargonmapper(object):
             self.mappicture.paste(tiledata.gettile(graphics, tileval),
                 (x*16, y*16) )
 
-        maptype = 1 if self.name.lower() in ['map', 'board_t'] else 0
-
         for objrecord in mapdata.objs:
-            sprites.drawsprite(self.mappicture, objrecord, maptype)
+            sprites.drawsprite(self.mappicture, objrecord)
 
     def save(self):
         self.mappicture.save(self.name + '.png')

@@ -33,12 +33,12 @@ class xargonmap(object):
             mapfile.read(struct.calcsize(pattern)) )
 
         # Decode the object header then the object list
-        objrecord = '<B12h2B2H'
+        objrecstruct = '<B12h2B2H'
 
         (numobjs,) = struct.unpack('<H', mapfile.read(2) )
 
-        self.objs = [struct.unpack(objrecord,
-            mapfile.read(struct.calcsize(objrecord)) )
+        self.objs = [objrecord(struct.unpack(objrecstruct,
+            mapfile.read(struct.calcsize(objrecstruct)) ) )
             for i in range(numobjs)]
 
         # There always appears to be a 0x61 byte unknown region between
@@ -70,7 +70,7 @@ class xargonmap(object):
         # Next, output the object list:
         with open(self.name + '_objs.csv', 'wb') as csvfile:
             writer = csv.writer(csvfile)
-            writer.writerows(self.objs)
+            writer.writerows([obj.rawdata for obj in self.objs])
 
         # Finally, the header and strings list:
         with open(self.name + '_info.csv', 'wb') as csvfile:
@@ -88,6 +88,13 @@ class xargonmap(object):
         mapimage = Image.new("RGB", (64, 128) )
         mapimage.putdata(visualdata)
         ImageOps.mirror(mapimage.rotate(-90)).save(self.name + '_flat.png')
+
+
+class objrecord(object):
+    def __init__(self, record):
+        self.rawdata = record
+        (self.sprtype, self.x, self.y) = record[0:3]
+        (self.width, self.height, self.subtype) = record[5:8]
 
 
 if __name__ == "__main__":

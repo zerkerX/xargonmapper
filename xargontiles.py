@@ -39,8 +39,6 @@ class tilefile(object):
 
             self.lookup[headerdata[0]] = headerdata[1]
 
-    neg1mapping = {8: (8, 24), 10: (10, 3)}
-
     def gettile(self, graphics, tilenum):
         if tilenum < 0xC000:
             graphindex = self.lookup[tilenum]

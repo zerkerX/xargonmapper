@@ -30,15 +30,17 @@ class imagefile(object):
     debugfont = ImageFont.truetype("DroidSans.ttf", 12)
 
     @staticmethod
-    def debugimage(index, width, height):
+    def debugimage(index, subindex, width, height):
         """ Creates a debug image for sprites """
         if width > 0 and height > 0:
-            colour = (index, index, index)
-            tempimage = Image.new("RGBA", (width, height), colour)
-            textcolor = (255, 255, 255) if index < 96 else (0, 0, 0)
+            # Provide sufficient space to display text
+            imgwidth = max(width, 32)
+            imgheight = max(height, 16)
+            tempimage = Image.new("RGBA", (imgwidth, imgheight))
             pen = ImageDraw.Draw(tempimage)
-            pen.text((width/2 - 7, height/2 - 6), '{:02}'.format(index),
-                font=imagefile.debugfont, fill=textcolor)
+            pen.rectangle(((0, 0), (width, height)), fill=(64, 64, 64, 128))
+            pen.text((imgwidth/2 - 15, imgheight/2 - 6), '{}:{}'.format(index,subindex),
+                font=imagefile.debugfont, fill=(255,255,255))
             return tempimage
         else:
             # 1 pixel transparent image
