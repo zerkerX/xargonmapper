@@ -47,6 +47,9 @@ class xargonmap(object):
         self.unknown = struct.unpack(unknownregion,
             mapfile.read(struct.calcsize(unknownregion)) )
 
+        # The first byte appears to be the map number.
+        self.mapnum = self.unknown[0]
+
         # Capture any strings until the end of the file
         self.strings = []
         sizebytes = mapfile.read(2)
@@ -103,6 +106,7 @@ class objrecord(object):
         self.rawdata = record
         (self.sprtype, self.x, self.y, self.colour) = record[0:4]
         (self.width, self.height, self.subtype) = record[5:8]
+        self.info = record[10]
         self.stringref = record[13]
 
 

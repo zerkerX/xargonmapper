@@ -17,7 +17,7 @@
 # with Xargon Mapper Mapper.
 # If not, see <http://www.gnu.org/licenses/>.
 import struct, sys, os, pdb, csv
-from PIL import Image, ImageFont, ImageDraw
+from PIL import Image, ImageFont, ImageDraw, ImageChops
 
 def createpath(pathname):
     """ Simple utility method for creating a path only if it does
@@ -61,21 +61,25 @@ class imagefile(object):
         self.records = [imagerecord(graphicsfile, offset, size)
             for (offset, size) in zip(headerdata, headerdata2)]
 
-        palimage = Image.open('screeny.png')
-        palette1 = palimage.getpalette()
-        self.palette = palette1
+        palimage = Image.open('palimage1.png')
+        self.palette = {0 : palimage.getpalette()}
+        palimage = Image.open('palimage2.png')
+        self.palette[1] = palimage.getpalette()
 
-        palettealt = self.records[5].getpalette()
-        palette2 = self.records[53].getpalette()
+        # Alternate palettes from the game data. Not properly decoded:
+        self.palette[9] = self.records[5].getpalette()
+        self.palette[10] = self.records[53].getpalette()
+
+        self.activepal = 0
 
         # Load the image data
         for recnum, record in enumerate(self.records):
             if recnum == 53:
-                record.loadimages(palette2, skipimages=1)
+                record.loadimages(self.palette[10], skipimages=1)
             elif recnum == 5:
-                record.loadimages(palette1, skipimages=1)
+                record.loadimages(self.palette[self.activepal], skipimages=1)
             else:
-                record.loadimages(palette1)
+                record.loadimages(self.palette[self.activepal])
 
     def debug_csv(self, filename):
         with open(filename, 'wb') as csvfile:
@@ -88,10 +92,26 @@ class imagefile(object):
         for recnum, record in enumerate(self.records):
             record.save(os.path.join(outpath, '{:02}-{}'.format(recnum, record.offset)))
 
+    def changepalette(self, palnum):
+        if self.activepal != palnum:
+            self.activepal = palnum
+            for record in self.records:
+                record.changepalette(self.palette[self.activepal])
+
     def getcolour(self, index):
-        return tuple(self.palette[index*3:index*3+3])
+        return tuple(self.palette[self.activepal][index*3:index*3+3])
 
+    def compositeimage(self, dimensions, imgrequests):
+        tempimage = Image.new("RGBA", dimensions)
+        for (x, y, recnum, imgnum) in imgrequests:
+            pasteimage = self.records[recnum].images[imgnum]
+            tempimage.paste(pasteimage, (x, y), pasteimage)
+        return tempimage
 
+    @staticmethod
+    def semitransparent(inimage, alpha):
+        alphaimage = Image.new("RGBA", inimage.size, (255, 255, 255, alpha))
+        return ImageChops.multiply(inimage, alphaimage)
 
 class imagerecord(object):
 
@@ -117,6 +137,7 @@ class imagerecord(object):
         self.size = size
 
         self.images = []
+        self.origimages = []
         # Store the file handle for future use
         self.filedata = filedata
 
@@ -147,6 +168,7 @@ class imagerecord(object):
                     tile = Image.fromstring("P", (width, height),
                         self.filedata.read(width*height))
                     tile.putpalette(palette)
+                    self.origimages.append(tile)
                     self.images.append(self.maskimage(tile))
 
             # Check to see if we actually loaded all data from this record
@@ -155,6 +177,11 @@ class imagerecord(object):
                 print "Record at offset {} has {} bytes unaccounted for.".format(self.offset, leftover)
             elif leftover < 0:
                 print "Record at offset {} read {} bytes beyond its boundary.".format(self.offset, -leftover)
+
+    def changepalette(self, palette):
+        for imagepos, image in enumerate(self.origimages):
+            image.putpalette(palette)
+            self.images[imagepos] = self.maskimage(image)
 
     def getpalette(self):
         """ Loads the first image in this record as a palette."""
@@ -165,7 +192,6 @@ class imagerecord(object):
             raise Exception('This image is not a palette!')
         else:
             return self.filedata.read(width*height)
-
 
     def save(self, outpath):
         if self.numimages > 0:

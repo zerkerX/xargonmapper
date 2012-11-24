@@ -216,4 +216,4 @@ require their own types of sprites.
 
 [day10.zip][day10] is available.
 
-[day10]: http://www.zerker.ca/misc/xargon/day9.zip
+[day10]: http://www.zerker.ca/misc/xargon/day10.zip

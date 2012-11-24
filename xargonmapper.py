@@ -24,9 +24,16 @@ from xargontiles import tilefile
 from spritedb import spritedb
 
 class xargonmapper(object):
-    def __init__(self, graphics, tiledata, sprites, mapdata):
+
+    def __init__(self, graphics, tiledata, mapdata):
         self.mappicture = Image.new("RGB", (128*16, 64*16) )
         self.name = mapdata.name
+
+        if mapdata.mapnum in [3, 6, 7, 10]:
+            graphics.changepalette(1)
+        else:
+            graphics.changepalette(0)
+        sprites = spritedb(graphics)
 
         for index, tileval in enumerate(mapdata.tiles):
             # Remember: maps are height first
@@ -48,12 +55,12 @@ TODO
 """
     else:
         xargonimages = imagefile(sys.argv[1])
-        sprites = spritedb(xargonimages)
+
         tiledata = tilefile(sys.argv[2])
         for filename in sys.argv[3:]:
             themap = xargonmap(filename)
 
             print "Generating Map '{}'".format(themap.name)
-            mapper = xargonmapper(xargonimages, tiledata, sprites, themap)
+            mapper = xargonmapper(xargonimages, tiledata, themap)
             print "Saving Map '{}'".format(themap.name)
             mapper.save()
