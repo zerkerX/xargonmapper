@@ -22,19 +22,24 @@
 from PIL import ImageFont, ImageDraw
 
 class spritedb(object):
+
+    markupfont = ImageFont.truetype("DroidSans.ttf", 12)
+
     def addsprite(self, sprtype, subtype, sprite):
         if sprtype not in self.sprites:
             self.sprites[sprtype] = {}
         self.sprites[sprtype][subtype] = sprite
 
+    def debug__init__(self, graphics):
+        self.sprites = {}
+        self.graphics = graphics
+
     def __init__(self, graphics):
         self.sprites = {}
-        self.mapsprites = {}
 
         # Manually-defined sprites (i.e. special handling needed
         self.addsprite(0, 4, sprite(graphics.records[6].images[9], yoffs=-8)) # Player
         self.addsprite(9, 3, sprite(graphics.records[31].images[35], xoffs=6, yoffs=8)) # Blue Lock
-
 
         # Text sprites:
         self.addsprite(6, 0, textsprite(ImageFont.truetype("FreeMonoBold.ttf", 9), graphics))
@@ -54,6 +59,7 @@ class spritedb(object):
         for (sprtype, subtype, recnum, imagenum) in [(4, 0, 40, 20), # Mine
                 (5, 0, 47, 8), # Map Player
                 (13, 0, 36, 2), # Springboard
+                (16, 0, 36, 13), # Elevator Platform
                 (20, 3, 31, 24), # Blue Key
                 (21, 0, 37, 33), # Health Pickup
                 (22, 0, 30, 28), # Emerald
@@ -61,18 +67,30 @@ class spritedb(object):
                 (28, 0, 30, 15), (28, 4, 30, 17), (28, 6, 40, 21),
                 (28, 8, 30, 21), (28, 9, 30, 22), # Powerups
                 (28, 1, 30, 16), # Purple Key
+                (33, 28, 37, 28), # Fireball
+                (46, 0, 51, 7), (46, 1, 51, 7), # Spike ball
                 (48, 0, 40, 16), (48, 1, 40, 17), # Bubbles
+                (49, 0, 48, 12), # Torch
                 (51, 0, 36, 33), # Clouds
                 (55, 0, 61, 8), # Brute
-                (59, 0, 36, 28), # Spikes
+                (60, 0, 59, 0), (60, 1, 59, 3), # Flying Robots
                 (68, 0, 40, 6), # Big Fish
+                (72, 0, 55, 0), (72, 1, 55, 1), (72, 2, 55, 2), # Pillar
                 (72, 7, 55, 3), (72, 8, 55, 4), (72, 9, 55, 5), (72, 10, 55, 6), # Foliage
                 (72, 4, 36, 35), (72, 11, 36, 36), # Exit Sign
                 (77, 0, 32, 0), # Bee!
+                (82, 0, 59, 18), # Robot with Treads
                 (83, 0, 40, 22), # Small fish
-                (88, -1, 47, 16), (88, 2, 47, 20), (88, 3, 47, 21) # Map images
+                (84, 0, 30, 31), # Saber of King Arkul
+                (88, -1, 47, 16), (88, 0, 47, 18), (88, 1, 47, 19),
+                (88, 2, 47, 20), (88, 3, 47, 21), (88, 4, 47, 22),
+                (88, 5, 47, 23), (88, 6, 47, 24) # Map images
                 ]:
             self.addsprite(sprtype, subtype, sprite(graphics.records[recnum].images[imagenum]))
+
+        # Illusionary Wall:
+        self.addsprite(72, 12, sprite(graphics.semitransparent(
+                graphics.records[19].images[16], 160) ))
 
         # Treasures (+ contents)
         treasurelookup = {0 : graphics.records[37].images[24],
@@ -97,6 +115,12 @@ class spritedb(object):
             0 : graphics.records[30].images[19],
             1 : graphics.records[51].images[0]}))
 
+        # Spikes:
+        self.addsprite(59, 0, variablesprite({
+            0 : graphics.records[36].images[28],
+            1 : graphics.records[36].images[32]},
+            field='direction'))
+
         # Pickups appear to be in the same order as their corresponding record.
         # There are two types of pickups: normal and hidden.
         for subtype in range(24):
@@ -107,22 +131,22 @@ class spritedb(object):
         # Empty sprites:
         # For future reference, possible meanings are:
         # 17-# (and other numbers): Respawn point
-        for sprtype in [17]:
-            for subtype in range(11):
-                self.addsprite(sprtype, subtype, sprite(graphics.debugimage(sprtype, subtype, 0, 0)))
+        # 63-# Start?
+        for sprtype in [17, 63]:
+            for subtype in range(-1, 11):
+                self.addsprite(sprtype, subtype, sprite(graphics.records[30].images[19]))
 
         # 63-3: Start??
         # 61:0, 62:0: Doorway
         # 12: Treasure Drop Trigger?
         # 71-0: Sign? 71-1 Popup message?
-        for sprtype, subtype in [(63,3), # Start?
+        for sprtype, subtype in [
             (61,0), (62,0), # Warp Doorway
             (19,0), # Map label? (TODO: Implement via compound sprite?)
-        #    (12,0), # Switch/Trigger
             (71,0), (71,1), # Sign & Popup Message?
             (9, -1) # Locked Map Gate
             ]:
-            self.addsprite(sprtype, subtype, sprite(graphics.debugimage(sprtype, subtype, 0, 0)))
+            self.addsprite(sprtype, subtype, sprite(graphics.records[30].images[19]))
 
         # Cache a reference to the graphics object for future use
         self.graphics = graphics
@@ -136,6 +160,24 @@ class spritedb(object):
 
         self.sprites[objrec.sprtype][objrec.subtype].draw(mappicture, objrec, mapdata)
 
+        #if objrec.info != 0:
+        #    self.drawlabel(mappicture, (objrec.x -8, objrec.y -8), str(objrec.info))
+
+
+    def drawlabel(self, mappicture, coords, text):
+        # Draw the text 5 times to create an outline
+        # (4 x black then 1 x white)
+        pen = ImageDraw.Draw(mappicture)
+        for offset, colour in [( (-1,-1), (0,0,0) ),
+                ( (-1,1), (0,0,0) ),
+                ( (1,-1), (0,0,0) ),
+                ( (1,1), (0,0,0) ),
+                ( (0,0), (255,255,255) )]:
+            pen.text((coords[0] + offset[0], coords[1] + offset[1]),
+                text, font=self.markupfont, fill=colour)
+
+
+
 class sprite(object):
     def __init__(self, image, xoffs=0, yoffs=0):
         self.image = image
@@ -148,6 +190,7 @@ class sprite(object):
         mappicture.paste(self.image, (objrec.x +self.xoffs,
             objrec.y +self.yoffs), self.image)
 
+
 class textsprite(sprite):
     def __init__(self, font, graphics):
         self.font = font
@@ -156,19 +199,21 @@ class textsprite(sprite):
     def draw(self, mappicture, objrec, mapdata):
         pen = ImageDraw.Draw(mappicture)
         pen.text((objrec.x, objrec.y-2), mapdata.getstring(objrec.stringref),
-                font=self.font, fill=self.graphics.getcolour(objrec.colour))
+                font=self.font, fill=self.graphics.getcolour(objrec.apperance))
+
 
 class variablesprite(sprite):
-    def __init__(self, imagelookup, contents=None):
+    def __init__(self, imagelookup, contents=None, field='apperance'):
         # Create a lookup of possible boxes
         self.types = imagelookup
         self.xoffs = 0
         self.yoffs = 0
         self.contents = contents
+        self.field = field
 
     def draw(self, mappicture, objrec, mapdata):
         # Pick the correct image then use the parent routine to draw the box
-        self.image = self.types[objrec.colour]
+        self.image = self.types[objrec.__dict__[self.field]]
         super(variablesprite, self).draw(mappicture, objrec, mapdata)
 
         # Place contents immediately above the current sprite

@@ -104,7 +104,7 @@ class xargonmap(object):
 class objrecord(object):
     def __init__(self, record):
         self.rawdata = record
-        (self.sprtype, self.x, self.y, self.colour) = record[0:4]
+        (self.sprtype, self.x, self.y, self.apperance, self.direction) = record[0:5]
         (self.width, self.height, self.subtype) = record[5:8]
         self.info = record[10]
         self.stringref = record[13]

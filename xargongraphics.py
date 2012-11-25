@@ -32,19 +32,16 @@ class imagefile(object):
     @staticmethod
     def debugimage(index, subindex, width, height):
         """ Creates a debug image for sprites """
+        # Provide sufficient space to display text
+        imgwidth = max(width, 32)
+        imgheight = max(height, 16)
+        tempimage = Image.new("RGBA", (imgwidth, imgheight))
+        pen = ImageDraw.Draw(tempimage)
         if width > 0 and height > 0:
-            # Provide sufficient space to display text
-            imgwidth = max(width, 32)
-            imgheight = max(height, 16)
-            tempimage = Image.new("RGBA", (imgwidth, imgheight))
-            pen = ImageDraw.Draw(tempimage)
             pen.rectangle(((0, 0), (width, height)), fill=(64, 64, 64, 128))
-            pen.text((imgwidth/2 - 15, imgheight/2 - 6), '{}:{}'.format(index,subindex),
-                font=imagefile.debugfont, fill=(255,255,255))
-            return tempimage
-        else:
-            # 1 pixel transparent image
-            return Image.new("RGBA", (width, height))
+        pen.text((imgwidth/2 - 15, imgheight/2 - 6), '{}:{}'.format(index,subindex),
+            font=imagefile.debugfont, fill=(255,255,255))
+        return tempimage
 
     def __init__(self, filename):
         filesize = os.path.getsize(filename)
@@ -87,10 +84,10 @@ class imagefile(object):
             for recnum, record in enumerate(self.records):
                 writer.writerow([recnum, record.offset, record.size] + list(record.header))
 
-    def save(self, outpath):
+    def save(self, outpath, masked=True):
         createpath(outpath)
         for recnum, record in enumerate(self.records):
-            record.save(os.path.join(outpath, '{:02}-{}'.format(recnum, record.offset)))
+            record.save(outpath, recnum, masked)
 
     def changepalette(self, palnum):
         if self.activepal != palnum:
@@ -193,11 +190,16 @@ class imagerecord(object):
         else:
             return self.filedata.read(width*height)
 
-    def save(self, outpath):
+    def save(self, outpath, recnum, masked=True):
         if self.numimages > 0:
             createpath(outpath)
-            for tilenum, tile in enumerate(self.images):
-                tile.save(os.path.join(outpath, '{:04}.png'.format(tilenum)) )
+            if (masked):
+                for tilenum, tile in enumerate(self.images):
+                    tile.save(os.path.join(outpath, '{:02}-{:04}.png'.format(recnum, tilenum)) )
+            else:
+                for tilenum, tile in enumerate(self.origimages):
+                    tile.save(os.path.join(outpath, '{:02}-{:04}.png'.format(recnum, tilenum)) )
+
 
 
 if __name__ == "__main__":
@@ -209,4 +211,5 @@ TODO
         for filename in sys.argv[1:]:
             xargonimages = imagefile(filename)
             xargonimages.debug_csv('debug.csv')
-            xargonimages.save('output')
+            xargonimages.save('Images')
+            xargonimages.save('OriginalImages', masked=False)
