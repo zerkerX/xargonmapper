@@ -23,7 +23,7 @@ from PIL import ImageFont, ImageDraw
 
 class spritedb(object):
 
-    markupfont = ImageFont.truetype("DroidSans.ttf", 12)
+    markupfont = ImageFont.load("font1.pil")
 
     def addsprite(self, sprtype, subtype, sprite):
         if sprtype not in self.sprites:
@@ -42,8 +42,8 @@ class spritedb(object):
         self.addsprite(9, 3, sprite(graphics.records[31].images[35], xoffs=6, yoffs=8)) # Blue Lock
 
         # Text sprites:
-        self.addsprite(6, 0, textsprite(ImageFont.truetype("FreeMonoBold.ttf", 9), graphics))
-        self.addsprite(7, 0, textsprite(ImageFont.truetype("FreeMonoBold.ttf", 12), graphics))
+        self.addsprite(6, 0, textsprite(ImageFont.load("font2.pil"), graphics))
+        self.addsprite(7, 0, textsprite(ImageFont.load("font1.pil"), graphics))
 
         # Compound Sprite for Centipede Monster
         self.addsprite(52, 7, sprite(graphics.compositeimage((76, 22), [(0, 0, 52, 0),
@@ -198,7 +198,7 @@ class textsprite(sprite):
 
     def draw(self, mappicture, objrec, mapdata):
         pen = ImageDraw.Draw(mappicture)
-        pen.text((objrec.x, objrec.y-2), mapdata.getstring(objrec.stringref),
+        pen.text((objrec.x, objrec.y), mapdata.getstring(objrec.stringref),
                 font=self.font, fill=self.graphics.getcolour(objrec.apperance))
 
 

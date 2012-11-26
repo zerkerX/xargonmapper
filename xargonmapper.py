@@ -29,7 +29,9 @@ class xargonmapper(object):
         self.mappicture = Image.new("RGB", (128*16, 64*16) )
         self.name = mapdata.name
 
-        if mapdata.mapnum in [3, 6, 7, 10]:
+        if self.name.upper() in ['BOARD_03', 'BOARD_05', 'BOARD_06',
+                'BOARD_07', 'BOARD_09', 'BOARD_10', 'INTRO', 'DEMO1',
+                'DEMO2', 'DEMO3']:
             graphics.changepalette(1)
         else:
             graphics.changepalette(0)

@@ -20,7 +20,7 @@ import struct, sys, os, pdb, csv
 from PIL import Image, ImageFont, ImageDraw
 
 class tilefile(object):
-    debugfont = ImageFont.truetype("DroidSans.ttf", 8)
+    debugfont = ImageFont.load("font1.pil")
 
     def __init__(self, filename):
         filesize = os.path.getsize(filename)

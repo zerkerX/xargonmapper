@@ -27,19 +27,19 @@ def createpath(pathname):
         os.mkdir(pathname)
 
 class imagefile(object):
-    debugfont = ImageFont.truetype("DroidSans.ttf", 12)
+    debugfont = ImageFont.load("font1.pil")
 
     @staticmethod
     def debugimage(index, subindex, width, height):
         """ Creates a debug image for sprites """
         # Provide sufficient space to display text
-        imgwidth = max(width, 32)
+        imgwidth = max(width, 48)
         imgheight = max(height, 16)
         tempimage = Image.new("RGBA", (imgwidth, imgheight))
         pen = ImageDraw.Draw(tempimage)
         if width > 0 and height > 0:
             pen.rectangle(((0, 0), (width, height)), fill=(64, 64, 64, 128))
-        pen.text((imgwidth/2 - 15, imgheight/2 - 6), '{}:{}'.format(index,subindex),
+        pen.text((imgwidth/2 - 22, imgheight/2 - 6), '{}:{}'.format(index,subindex),
             font=imagefile.debugfont, fill=(255,255,255))
         return tempimage
 

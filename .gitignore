@@ -1,5 +1,8 @@
 BOARD*.png
 MAP*.png
+DEMO*.png
+STORY.png
+INTRO.png
 dates
 *.csv
 *.ods
@@ -7,3 +10,4 @@ dates
 out.txt
 Xargon.conf
 *.BAT
+debug
