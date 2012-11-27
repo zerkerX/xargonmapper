@@ -31,8 +31,10 @@ class xargonmapper(object):
 
         if self.name.upper() in ['BOARD_03', 'BOARD_05', 'BOARD_06',
                 'BOARD_07', 'BOARD_09', 'BOARD_10', 'INTRO', 'DEMO1',
-                'DEMO2', 'DEMO3']:
+                'DEMO2']:
             graphics.changepalette(1)
+        elif self.name.upper() == 'DEMO3':
+            graphics.changepalette(2)
         else:
             graphics.changepalette(0)
         sprites = spritedb(graphics)

@@ -62,6 +62,8 @@ class imagefile(object):
         self.palette = {0 : palimage.getpalette()}
         palimage = Image.open('palimage2.png')
         self.palette[1] = palimage.getpalette()
+        palimage = Image.open('palimage3.png')
+        self.palette[2] = palimage.getpalette()
 
         # Alternate palettes from the game data. Not properly decoded:
         self.palette[9] = self.records[5].getpalette()
