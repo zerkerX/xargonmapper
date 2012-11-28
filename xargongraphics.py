@@ -64,6 +64,10 @@ class imagefile(object):
         self.palette[1] = palimage.getpalette()
         palimage = Image.open('palimage3.png')
         self.palette[2] = palimage.getpalette()
+        palimage = Image.open('palimage4.png')
+        self.palette[3] = palimage.getpalette()
+        palimage = Image.open('palimage5.png')
+        self.palette[4] = palimage.getpalette()
 
         # Alternate palettes from the game data. Not properly decoded:
         self.palette[9] = self.records[5].getpalette()
@@ -74,7 +78,7 @@ class imagefile(object):
         # Load the image data
         for recnum, record in enumerate(self.records):
             if recnum == 53:
-                record.loadimages(self.palette[10], skipimages=1)
+                record.loadimages(self.palette[3], skipimages=1)
             elif recnum == 5:
                 record.loadimages(self.palette[self.activepal], skipimages=1)
             else:

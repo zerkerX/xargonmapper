@@ -40,6 +40,13 @@ class spritedb(object):
 
         # Manually-defined sprites (i.e. special handling needed
         self.addsprite(0, 4, sprite(graphics.records[6].images[9], yoffs=-8)) # Player
+
+        # Keys and Locks:
+        for i in range (4):
+            self.addsprite(9, i, sprite(graphics.records[31].images[32+i], xoffs=6, yoffs=8)) # Lock
+            self.addsprite(20, i, sprite(graphics.records[31].images[i*8])) # Key
+
+        self.addsprite(9, 1, sprite(graphics.records[31].images[33], xoffs=6, yoffs=8)) # Green Lock
         self.addsprite(9, 3, sprite(graphics.records[31].images[35], xoffs=6, yoffs=8)) # Blue Lock
 
         # Text sprites:
@@ -51,10 +58,15 @@ class spritedb(object):
             (16, 5, 52, 1), (24, 5, 52, 2), (32, 5, 52, 3), (40, 5, 52, 4),
             (48, 5, 52, 5), (56, 5, 52, 6), (64, 7, 52, 7)] )))
 
-        # Compound and semi-transparent for hidden platform
-        self.addsprite(11, 0, sprite(graphics.semitransparent(
-            graphics.compositeimage((32, 16), [(0, 0, 25, 14),
-            (16, 0, 25, 15)]), 128) ))
+        # Variant of Compound and semi-transparent for hidden platform(s)
+        self.addsprite(11, 0, variablesprite({
+            6: graphics.semitransparent(
+               graphics.compositeimage((32, 16), [(0, 0, 25, 14),
+               (16, 0, 25, 15)]), 128),
+            7: graphics.semitransparent(
+               graphics.compositeimage((32, 16), [(0, 0, 51, 10),
+               (16, 0, 51, 11)]), 128) }
+             ))
 
         # Simple sprite mapping. Stage sprites, then Map sprites
         for (sprtype, subtype, recnum, imagenum) in [(0, 0, 6, 10), # Menu Player
@@ -62,21 +74,24 @@ class spritedb(object):
                 (5, 0, 47, 8), # Map Player
                 (13, 0, 36, 2), # Springboard
                 (16, 0, 36, 13), # Elevator Platform
-                (20, 3, 31, 24), # Blue Key
+                (18, 0, 36, 0), # Manual Elevator
                 (21, 0, 37, 33), # Health Pickup
                 (22, 0, 30, 28), # Emerald
+                (24, 0, 34, 0), # EPIC Points
                 (25, 0, 35, 2), # Clawface Monster
-                (28, 0, 30, 15), (28, 4, 30, 17),
+                (28, 0, 30, 15), (28, 4, 30, 17), (28, 5, 30, 18),
                 (28, 7, 30, 20), (28, 8, 30, 21), (28, 9, 30, 22), # Powerups
                 (28, 1, 30, 16), # Purple Key
+                (29, 0, 36, 23), (29, 1, 36, 24), # Toggle Switch
                 (33, 28, 37, 28), # Fireball
                 (38, 0, 30, 50), (38, 1, 30, 51), (38, 2, 30, 52), # Menu Bullets
                 (40, 0, 30, 62), # Star
+                (42, 3, 37, 32), # Yellow Gem
+                (44, 0, 15, 2), # Stalagtite
+                (45, 0, 36, 19), # Boulder Trap
                 (46, 0, 51, 7), (46, 1, 51, 7), # Spike ball
-                (47, 0, 48, 2), # Flame Jet
                 (48, 0, 40, 16), (48, 1, 40, 17), # Bubbles
                 (49, 0, 48, 12), # Torch
-                (50, 0, 60, 1), # Snake Face
                 (51, 0, 36, 33), # Clouds
                 (53, 0, 58, 1), # Alien Rat Thing
                 (55, 0, 61, 8), # Brute
@@ -87,6 +102,7 @@ class spritedb(object):
                 (72, 4, 36, 35), (72, 11, 36, 36), # Exit Sign
                 (75, 0, 62, 2), # Skull Slug
                 (77, 0, 32, 0), # Bee!
+                (78, 0, 50, 0), # Climbing Monster
                 (79, 0, 43, 9), # Spider!
                 (82, 0, 59, 18), # Robot with Treads
                 (83, 0, 40, 22), # Small fish
@@ -96,6 +112,10 @@ class spritedb(object):
                 (88, 5, 47, 23), (88, 6, 47, 24) # Map images
                 ]:
             self.addsprite(sprtype, subtype, sprite(graphics.records[recnum].images[imagenum]))
+
+        # Crushing Ceilings:
+        for i in range (16):
+            self.addsprite(15, i, sprite(graphics.records[36].images[6]))
 
         # Illusionary Walls:
         self.addsprite(72, 12, sprite(graphics.semitransparent(
@@ -121,22 +141,43 @@ class spritedb(object):
             self.addsprite(sprtype, subtype, variablesprite(treasurelookup,
                 contents=graphics.records[crecnum].images[cimagenum]))
 
-        # Switches:
+        # Pickup Switches:
         self.addsprite(12, 0, variablesprite({
             0 : graphics.records[30].images[19],
             1 : graphics.records[51].images[0]}))
+
+        # TODO: The following sprite types COULD draw corresponding trigger identifiers:
+        # 8 : Switchable Wall/Floor
+        # 11 : Hidden Platforms
+        # 12 : Pickup Switch
+        # 29 : Toggle switch
+        # 26 : Treasure (Drops)
+        # 44 : Stalagtites (Drops)
+        # 61. 62 : Warp Doorways (link number)
+
+        # Menu Flame Jets:
+        self.addsprite(47, 0, variablesprite({
+            6 : graphics.records[48].images[3],
+            8 : graphics.records[48].images[4]},
+            field='info'))
 
         # Spikes:
         self.addsprite(59, 0, variablesprite({
             0 : graphics.records[36].images[28],
             1 : graphics.records[36].images[32]},
             field='variant'))
+
         # Ceiling Spear
         self.addsprite(43, 0, variablesprite({
             0 : graphics.records[36].images[9],
             1 : graphics.records[36].images[12]},
             offsets={0: (0, 0), 1:(0, -4) },
             field='variant'))
+
+        # Snake Face
+        self.addsprite(50, 0, variablesprite({
+            0 : graphics.records[60].images[1],
+            1 : graphics.records[60].images[4]},))
 
         # Pickups appear to be in the same order as their corresponding record.
         # There are two types of pickups: normal and hidden.
@@ -165,6 +206,7 @@ class spritedb(object):
 
 
         # Empty sprites:
+        # -------------------------
         # For future reference, possible meanings are:
         # 17-# (and other numbers): Respawn point
         # 63-# Start?
@@ -174,12 +216,12 @@ class spritedb(object):
 
         # 63-3: Start??
         # 61:0, 62:0: Doorway
-        # 12: Treasure Drop Trigger?
         # 71-0: Sign? 71-1 Popup message?
         for sprtype, subtype in [
             (61,0), (62,0), # Warp Doorway
             (19,0), # Map label? (TODO: Implement via compound sprite?)
             (71,0), (71,1), # Sign & Popup Message?
+            (8, 0), (8, 1), # Switchable Pillar Wall
             (9, -1) # Locked Map Gate
             ]:
             self.addsprite(sprtype, subtype, sprite(graphics.records[30].images[19]))
@@ -200,8 +242,8 @@ class spritedb(object):
             #if objrec.info != 0:
             #    self.drawlabel(mappicture, (objrec.x -8, objrec.y -8), str(objrec.info))
         except:
-            print "Problem with Sprite {}, Type {}, Apperance {}, Variant {} at ({}, {})".format(
-                objrec.sprtype, objrec.subtype, objrec.apperance, objrec.variant,
+            print "Problem with Sprite {}, Type {}, Appearance {}, Variant {} at ({}, {})".format(
+                objrec.sprtype, objrec.subtype, objrec.appearance, objrec.variant,
                 objrec.x, objrec.y)
             traceback.print_exc()
 
@@ -242,11 +284,11 @@ class textsprite(sprite):
     def draw(self, mappicture, objrec, mapdata):
         pen = ImageDraw.Draw(mappicture)
         pen.text((objrec.x, objrec.y), mapdata.getstring(objrec.stringref),
-                font=self.font, fill=self.graphics.getcolour(objrec.apperance))
+                font=self.font, fill=self.graphics.getcolour(objrec.appearance))
 
 
 class variablesprite(sprite):
-    def __init__(self, imagelookup, contents=None, field='apperance', offsets=None):
+    def __init__(self, imagelookup, contents=None, field='appearance', offsets=None):
         # Create a lookup of possible boxes
         self.types = imagelookup
         self.xoffs = 0

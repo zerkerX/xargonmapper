@@ -29,12 +29,14 @@ class xargonmapper(object):
         self.mappicture = Image.new("RGB", (128*16, 64*16) )
         self.name = mapdata.name
 
-        if self.name.upper() in ['BOARD_03', 'BOARD_05', 'BOARD_06',
+        if self.name.upper() in ['BOARD_03', 'BOARD_06',
                 'BOARD_07', 'BOARD_09', 'BOARD_10', 'INTRO', 'DEMO1',
                 'DEMO2']:
             graphics.changepalette(1)
         elif self.name.upper() == 'DEMO3':
             graphics.changepalette(2)
+        elif self.name.upper() == 'BOARD_05':
+            graphics.changepalette(4)
         else:
             graphics.changepalette(0)
         sprites = spritedb(graphics)
@@ -45,7 +47,9 @@ class xargonmapper(object):
             self.mappicture.paste(tiledata.gettile(graphics, tileval),
                 (x*16, y*16) )
 
-        for objrecord in mapdata.objs:
+        for objrecord in mapdata.sprites:
+            sprites.drawsprite(self.mappicture, objrecord, mapdata)
+        for objrecord in mapdata.text:
             sprites.drawsprite(self.mappicture, objrecord, mapdata)
 
     def save(self):
