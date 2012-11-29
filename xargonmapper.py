@@ -37,6 +37,8 @@ class xargonmapper(object):
             graphics.changepalette(2)
         elif self.name.upper() == 'BOARD_05':
             graphics.changepalette(4)
+        elif self.name.upper() == 'BOARD_08':
+            graphics.changepalette(5)
         else:
             graphics.changepalette(0)
         sprites = spritedb(graphics)

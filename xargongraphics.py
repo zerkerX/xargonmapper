@@ -58,20 +58,14 @@ class imagefile(object):
         self.records = [imagerecord(graphicsfile, offset, size)
             for (offset, size) in zip(headerdata, headerdata2)]
 
-        palimage = Image.open('palimage1.png')
-        self.palette = {0 : palimage.getpalette()}
-        palimage = Image.open('palimage2.png')
-        self.palette[1] = palimage.getpalette()
-        palimage = Image.open('palimage3.png')
-        self.palette[2] = palimage.getpalette()
-        palimage = Image.open('palimage4.png')
-        self.palette[3] = palimage.getpalette()
-        palimage = Image.open('palimage5.png')
-        self.palette[4] = palimage.getpalette()
+        self.palette = {}
+        for i in range(6):
+            palimage = Image.open('palimage{}.png'.format(i) )
+            self.palette[i] = palimage.getpalette()
 
         # Alternate palettes from the game data. Not properly decoded:
-        self.palette[9] = self.records[5].getpalette()
-        self.palette[10] = self.records[53].getpalette()
+        self.palette[-1] = self.records[5].getpalette()
+        self.palette[-2] = self.records[53].getpalette()
 
         self.activepal = 0
 

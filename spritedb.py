@@ -73,12 +73,14 @@ class spritedb(object):
                 (4, 0, 40, 20), # Mine
                 (5, 0, 47, 8), # Map Player
                 (13, 0, 36, 2), # Springboard
-                (16, 0, 36, 13), # Elevator Platform
+                (16, 0, 36, 13), (16, 1, 36, 13), # Elevator Platform
                 (18, 0, 36, 0), # Manual Elevator
                 (21, 0, 37, 33), # Health Pickup
                 (22, 0, 30, 28), # Emerald
+                (23, 17, 45, 1), # Eagle
                 (24, 0, 34, 0), # EPIC Points
                 (25, 0, 35, 2), # Clawface Monster
+                (28, 6, 40, 21), # Diving Pod
                 (28, 0, 30, 15), (28, 4, 30, 17), (28, 5, 30, 18),
                 (28, 7, 30, 20), (28, 8, 30, 21), (28, 9, 30, 22), # Powerups
                 (28, 1, 30, 16), # Purple Key
@@ -96,14 +98,18 @@ class spritedb(object):
                 (53, 0, 58, 1), # Alien Rat Thing
                 (55, 0, 61, 8), # Brute
                 (60, 0, 59, 0), (60, 1, 59, 3), (60, 2, 59, 6), # Flying Robots
+                (64, 0, 39, 6), # Shrimp
+                (67, 0, 39, 15), # Eel
                 (68, 0, 40, 6), # Big Fish
                 (72, 0, 55, 0), (72, 1, 55, 1), (72, 2, 55, 2), # Pillar
                 (72, 7, 55, 3), (72, 8, 55, 4), (72, 9, 55, 5), (72, 10, 55, 6), # Foliage
                 (72, 4, 36, 35), (72, 11, 36, 36), # Exit Sign
+                (74, 0, 59, 9), # Ceiling Turret
                 (75, 0, 62, 2), # Skull Slug
                 (77, 0, 32, 0), # Bee!
                 (78, 0, 50, 0), # Climbing Monster
                 (79, 0, 43, 9), # Spider!
+                (81, 0, 39, 22), # Water Bed Creature
                 (82, 0, 59, 18), # Robot with Treads
                 (83, 0, 40, 22), # Small fish
                 (84, 0, 30, 31), (84, 1, 30, 32), (84, 2, 30, 33), # Artefacts
@@ -177,7 +183,8 @@ class spritedb(object):
         # Snake Face
         self.addsprite(50, 0, variablesprite({
             0 : graphics.records[60].images[1],
-            1 : graphics.records[60].images[4]},))
+            1 : graphics.records[60].images[4]},
+            offsets={0: (0, 0), 1:(-8, 0) }))
 
         # Pickups appear to be in the same order as their corresponding record.
         # There are two types of pickups: normal and hidden.
