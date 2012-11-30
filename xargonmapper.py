@@ -30,14 +30,14 @@ class xargonmapper(object):
         self.name = mapdata.name
 
         if self.name.upper() in ['BOARD_03', 'BOARD_06',
-                'BOARD_07', 'BOARD_09', 'BOARD_10', 'INTRO', 'DEMO1',
-                'DEMO2']:
+                'BOARD_07', 'BOARD_09', 'BOARD_10', 'BOARD_32', 'INTRO',
+                'DEMO1', 'DEMO2']:
             graphics.changepalette(1)
         elif self.name.upper() == 'DEMO3':
             graphics.changepalette(2)
         elif self.name.upper() == 'BOARD_05':
             graphics.changepalette(4)
-        elif self.name.upper() == 'BOARD_08':
+        elif self.name.upper() in ['BOARD_08', 'BOARD_33']:
             graphics.changepalette(5)
         else:
             graphics.changepalette(0)

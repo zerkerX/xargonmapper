@@ -88,6 +88,7 @@ class spritedb(object):
                 (33, 28, 37, 28), # Fireball
                 (38, 0, 30, 50), (38, 1, 30, 51), (38, 2, 30, 52), # Menu Bullets
                 (40, 0, 30, 62), # Star
+                (42, 0, 37, 29), # Green Gem (TBC)
                 (42, 3, 37, 32), # Yellow Gem
                 (44, 0, 15, 2), # Stalagtite
                 (45, 0, 36, 19), # Boulder Trap
@@ -99,11 +100,14 @@ class spritedb(object):
                 (55, 0, 61, 8), # Brute
                 (60, 0, 59, 0), (60, 1, 59, 3), (60, 2, 59, 6), # Flying Robots
                 (64, 0, 39, 6), # Shrimp
+                (65, 0, 54, 0), # Evil Cloak Guy
                 (67, 0, 39, 15), # Eel
                 (68, 0, 40, 6), # Big Fish
                 (72, 0, 55, 0), (72, 1, 55, 1), (72, 2, 55, 2), # Pillar
                 (72, 7, 55, 3), (72, 8, 55, 4), (72, 9, 55, 5), (72, 10, 55, 6), # Foliage
                 (72, 4, 36, 35), (72, 11, 36, 36), # Exit Sign
+                (72, 13, 38, 3), # Reactor
+                (72, 15, 38, 5), (72, 16, 38, 6), # To Reactor
                 (74, 0, 59, 9), # Ceiling Turret
                 (75, 0, 62, 2), # Skull Slug
                 (77, 0, 32, 0), # Bee!
@@ -113,6 +117,7 @@ class spritedb(object):
                 (82, 0, 59, 18), # Robot with Treads
                 (83, 0, 40, 22), # Small fish
                 (84, 0, 30, 31), (84, 1, 30, 32), (84, 2, 30, 33), # Artefacts
+                (87, 0, 38, 0), (87, 1, 38, 1), # The Mighty Xargon!
                 (88, -1, 47, 16), (88, 0, 47, 18), (88, 1, 47, 19),
                 (88, 2, 47, 20), (88, 3, 47, 21), (88, 4, 47, 22),
                 (88, 5, 47, 23), (88, 6, 47, 24) # Map images
@@ -124,10 +129,12 @@ class spritedb(object):
             self.addsprite(15, i, sprite(graphics.records[36].images[6]))
 
         # Illusionary Walls:
-        self.addsprite(72, 12, sprite(graphics.semitransparent(
-                graphics.records[19].images[16], 160) ))
         self.addsprite(72, 5, sprite(graphics.semitransparent(
                 graphics.records[11].images[23], 160) ))
+        self.addsprite(72, 6, sprite(graphics.semitransparent(
+                graphics.records[19].images[15], 160) ))
+        self.addsprite(72, 12, sprite(graphics.semitransparent(
+                graphics.records[19].images[16], 160) ))
 
         # Treasures (+ contents)
         treasurelookup = {0 : graphics.records[37].images[24],
@@ -197,11 +204,12 @@ class spritedb(object):
         # Other variants (all rendered invisible) appear to be:
         # 1 : Flaming Face Jet (Down)
         # 2 : Flaming Lava Jet (Up)
-        # 3 : TBC
+        # 3 : Robot Spawner
         self.addsprite(73, 0, variablesprite({
             1 : graphics.records[30].images[19],
             2 : graphics.records[30].images[19],
-            3 : graphics.debugimage(73, 'T3', 16, 16),
+            3 : graphics.compositeimage((32, 32), [(0, 0, 59, 1),
+               (16, 0, 59, 4), (8, 12, 59, 1)]),
             4 : graphics.semitransparent(
                 graphics.records[37].images[0], 128)},
             field='variant'))
@@ -290,8 +298,16 @@ class textsprite(sprite):
 
     def draw(self, mappicture, objrec, mapdata):
         pen = ImageDraw.Draw(mappicture)
-        pen.text((objrec.x, objrec.y), mapdata.getstring(objrec.stringref),
-                font=self.font, fill=self.graphics.getcolour(objrec.appearance))
+
+        if objrec.appearance == 8:
+            # Simulate multi-colour appearance by creating a fake shadow effect
+            pen.text((objrec.x, objrec.y), mapdata.getstring(objrec.stringref),
+                    font=self.font, fill=self.graphics.getcolour(14))
+            pen.text((objrec.x-1, objrec.y), mapdata.getstring(objrec.stringref),
+                    font=self.font, fill=self.graphics.getcolour(6))
+        else:
+            pen.text((objrec.x, objrec.y), mapdata.getstring(objrec.stringref),
+                    font=self.font, fill=self.graphics.getcolour(objrec.appearance))
 
 
 class variablesprite(sprite):
