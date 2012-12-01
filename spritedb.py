@@ -22,9 +22,9 @@
 import traceback
 from PIL import ImageFont, ImageDraw
 
-class spritedb(object):
+markupfont = ImageFont.load("font2.pil")
 
-    markupfont = ImageFont.load("font1.pil")
+class spritedb(object):
 
     def addsprite(self, sprtype, subtype, sprite):
         if sprtype not in self.sprites:
@@ -43,20 +43,13 @@ class spritedb(object):
 
         # Keys and Locks:
         for i in range (4):
-            self.addsprite(9, i, sprite(graphics.records[31].images[32+i], xoffs=6, yoffs=8)) # Lock
+            self.addsprite(9, i, sprite(graphics.records[31].images[32+i],
+                xoffs=6, yoffs=8, hidelabel=True)) # Lock
             self.addsprite(20, i, sprite(graphics.records[31].images[i*8])) # Key
-
-        self.addsprite(9, 1, sprite(graphics.records[31].images[33], xoffs=6, yoffs=8)) # Green Lock
-        self.addsprite(9, 3, sprite(graphics.records[31].images[35], xoffs=6, yoffs=8)) # Blue Lock
 
         # Text sprites:
         self.addsprite(6, 0, textsprite(ImageFont.load("font2.pil"), graphics))
         self.addsprite(7, 0, textsprite(ImageFont.load("font1.pil"), graphics))
-
-        # Compound Sprite for Centipede Monster
-        self.addsprite(52, 7, sprite(graphics.compositeimage((76, 22), [(0, 0, 52, 0),
-            (16, 5, 52, 1), (24, 5, 52, 2), (32, 5, 52, 3), (40, 5, 52, 4),
-            (48, 5, 52, 5), (56, 5, 52, 6), (64, 7, 52, 7)] )))
 
         # Variant of Compound and semi-transparent for hidden platform(s)
         self.addsprite(11, 0, variablesprite({
@@ -71,20 +64,16 @@ class spritedb(object):
         # Simple sprite mapping. Stage sprites, then Map sprites
         for (sprtype, subtype, recnum, imagenum) in [(0, 0, 6, 10), # Menu Player
                 (4, 0, 40, 20), # Mine
-                (5, 0, 47, 8), # Map Player
-                (13, 0, 36, 2), # Springboard
                 (16, 0, 36, 13), (16, 1, 36, 13), # Elevator Platform
                 (18, 0, 36, 0), # Manual Elevator
                 (21, 0, 37, 33), # Health Pickup
                 (22, 0, 30, 28), # Emerald
                 (23, 17, 45, 1), # Eagle
                 (24, 0, 34, 0), # EPIC Points
-                (25, 0, 35, 2), # Clawface Monster
                 (28, 6, 40, 21), # Diving Pod
                 (28, 0, 30, 15), (28, 4, 30, 17), (28, 5, 30, 18),
                 (28, 7, 30, 20), (28, 8, 30, 21), (28, 9, 30, 22), # Powerups
                 (28, 1, 30, 16), # Purple Key
-                (29, 0, 36, 23), (29, 1, 36, 24), # Toggle Switch
                 (33, 28, 37, 28), # Fireball
                 (38, 0, 30, 50), (38, 1, 30, 51), (38, 2, 30, 52), # Menu Bullets
                 (40, 0, 30, 62), # Star
@@ -92,37 +81,40 @@ class spritedb(object):
                 (42, 3, 37, 32), # Yellow Gem
                 (44, 0, 15, 2), # Stalagtite
                 (45, 0, 36, 19), # Boulder Trap
-                (46, 0, 51, 7), (46, 1, 51, 7), # Spike ball
                 (48, 0, 40, 16), (48, 1, 40, 17), # Bubbles
-                (49, 0, 48, 12), # Torch
                 (51, 0, 36, 33), # Clouds
-                (53, 0, 58, 1), # Alien Rat Thing
-                (55, 0, 61, 8), # Brute
-                (60, 0, 59, 0), (60, 1, 59, 3), (60, 2, 59, 6), # Flying Robots
-                (64, 0, 39, 6), # Shrimp
-                (65, 0, 54, 0), # Evil Cloak Guy
-                (67, 0, 39, 15), # Eel
-                (68, 0, 40, 6), # Big Fish
                 (72, 0, 55, 0), (72, 1, 55, 1), (72, 2, 55, 2), # Pillar
                 (72, 7, 55, 3), (72, 8, 55, 4), (72, 9, 55, 5), (72, 10, 55, 6), # Foliage
                 (72, 4, 36, 35), (72, 11, 36, 36), # Exit Sign
                 (72, 13, 38, 3), # Reactor
                 (72, 15, 38, 5), (72, 16, 38, 6), # To Reactor
                 (74, 0, 59, 9), # Ceiling Turret
-                (75, 0, 62, 2), # Skull Slug
-                (77, 0, 32, 0), # Bee!
                 (78, 0, 50, 0), # Climbing Monster
-                (79, 0, 43, 9), # Spider!
                 (81, 0, 39, 22), # Water Bed Creature
-                (82, 0, 59, 18), # Robot with Treads
-                (83, 0, 40, 22), # Small fish
                 (84, 0, 30, 31), (84, 1, 30, 32), (84, 2, 30, 33), # Artefacts
                 (87, 0, 38, 0), (87, 1, 38, 1), # The Mighty Xargon!
-                (88, -1, 47, 16), (88, 0, 47, 18), (88, 1, 47, 19),
-                (88, 2, 47, 20), (88, 3, 47, 21), (88, 4, 47, 22),
-                (88, 5, 47, 23), (88, 6, 47, 24) # Map images
+                (88, 0, 47, 18), (88, 1, 47, 19),
+                (88, 2, 47, 20), (88, 3, 47, 21), (88, 6, 47, 24) # Map images
                 ]:
             self.addsprite(sprtype, subtype, sprite(graphics.records[recnum].images[imagenum]))
+
+        # Simple mapping to hide info label:
+        for (sprtype, subtype, recnum, imagenum) in [
+                (13, 0, 36, 2), # Springboard
+                (46, 0, 51, 7), (46, 1, 51, 7), # Spike ball
+                (49, 0, 48, 12), # Torch
+                ]:
+            self.addsprite(sprtype, subtype, sprite(graphics.records[recnum].images[imagenum],
+                hidelabel=True))
+
+        # Map Images that need alignment:
+        for (sprtype, subtype, recnum, imagenum) in [
+                (5, 0, 47, 8), # Map Player
+                (88, 4, 47, 22), (88, 5, 47, 23)]:
+            self.addsprite(sprtype, subtype, sprite(
+                graphics.records[recnum].images[imagenum], xoffs=4))
+        self.addsprite(88, -1, sprite(
+            graphics.records[47].images[16], xoffs=2, yoffs=2))
 
         # Crushing Ceilings:
         for i in range (16):
@@ -157,7 +149,14 @@ class spritedb(object):
         # Pickup Switches:
         self.addsprite(12, 0, variablesprite({
             0 : graphics.records[30].images[19],
-            1 : graphics.records[51].images[0]}))
+            1 : graphics.records[51].images[0]},
+            labelpref="TR ", labeloffs = (0, 4)) )
+
+        # Toggle Switches:
+        self.addsprite(29, 0, sprite(graphics.records[36].images[23],
+            labelpref = "SW "))
+        self.addsprite(29, 1, sprite(graphics.records[36].images[24],
+            labelpref = "SW "))
 
         # TODO: The following sprite types COULD draw corresponding trigger identifiers:
         # 8 : Switchable Wall/Floor
@@ -172,31 +171,150 @@ class spritedb(object):
         self.addsprite(47, 0, variablesprite({
             6 : graphics.records[48].images[3],
             8 : graphics.records[48].images[4]},
-            field='info'))
+            field='info', hidelabel=True))
 
         # Spikes:
         self.addsprite(59, 0, variablesprite({
             0 : graphics.records[36].images[28],
             1 : graphics.records[36].images[32]},
-            field='variant'))
+            field='variant', hidelabel=True))
 
         # Ceiling Spear
         self.addsprite(43, 0, variablesprite({
             0 : graphics.records[36].images[9],
             1 : graphics.records[36].images[12]},
             offsets={0: (0, 0), 1:(0, -4) },
-            field='variant'))
+            field='variant', hidelabel=True))
 
         # Snake Face
         self.addsprite(50, 0, variablesprite({
             0 : graphics.records[60].images[1],
             1 : graphics.records[60].images[4]},
-            offsets={0: (0, 0), 1:(-8, 0) }))
+            offsets={0: (0, 0), 1:(-8, 0) },
+            hidelabel = True))
+
+
+        # Monsters:
+        # Assumed Convention: > 0 -- Right, <= 0 -- Left
+        # Clawface Monster
+        self.addsprite(25, 0, variablesprite({
+            0 : graphics.records[35].images[2],
+            2 : graphics.records[35].images[10],
+            } ))
+
+        # Brute
+        self.addsprite(55, 0, variablesprite({
+            -4 : graphics.records[61].images[12],
+            -3 : graphics.records[61].images[11],
+            -2 : graphics.records[61].images[10],
+            -1 : graphics.records[61].images[9],
+            0 : graphics.records[61].images[8],
+            1 : graphics.records[61].images[0],
+            2 : graphics.records[61].images[1],
+            3 : graphics.records[61].images[2],
+            4 : graphics.records[61].images[3]
+            } ))
+
+        # Centipede Monster
+        self.addsprite(52, 7, sprite(graphics.compositeimage((76, 22), [(0, 0, 52, 0),
+            (16, 5, 52, 1), (24, 5, 52, 2), (32, 5, 52, 3), (40, 5, 52, 4),
+            (48, 5, 52, 5), (56, 5, 52, 6), (64, 7, 52, 7)] )))
+
+        # Alien Rat Thing
+        self.addsprite(53, 0, variablesprite({
+            -1 : graphics.records[58].images[2],
+            0 : graphics.records[58].images[1],
+            2 : graphics.records[58].images[6]
+            } ))
+
+        # Flying Robots
+        self.addsprite(60, 0, variablesprite({
+            0 : graphics.records[59].images[1]
+            } ))
+        self.addsprite(60, 1, variablesprite({
+            0 : graphics.records[59].images[4]
+            } ))
+        self.addsprite(60, 2, variablesprite({
+            0 : graphics.records[59].images[7]
+            } ))
+
+        (64, 0, 39, 6), # Shrimp
+        self.addsprite(64, 0, variablesprite({
+            0 : graphics.records[25].images[2],
+            2 : graphics.records[25].images[10],
+            } ))
+
+        # Evil Cloak Guy
+        self.addsprite(65, 0, variablesprite({
+            0 : graphics.records[54].images[5],
+            2 : graphics.records[54].images[0],
+            } ))
+
+        # Eel
+        self.addsprite(67, 0, variablesprite({
+            -3 : graphics.records[39].images[14],
+            0 : graphics.records[39].images[15],
+            2 : graphics.records[39].images[20]
+            } ))
+
+        # Big Fish
+        self.addsprite(68, 0, variablesprite({
+            -2 : graphics.records[40].images[7],
+            0 : graphics.records[40].images[6],
+            2 : graphics.records[40].images[11],
+            3 : graphics.records[40].images[12]
+            } ))
+
+        # Skull Slug!
+        self.addsprite(75, 0, variablesprite({
+            -1 : graphics.records[62].images[2],
+            0 : graphics.records[62].images[0],
+            1 : graphics.records[62].images[5],
+            2 : graphics.records[62].images[3]
+            }, hidelabel=True ))
+
+        # Bee!
+        self.addsprite(77, 0, variablesprite({
+            0 : graphics.records[32].images[0],
+            2 : graphics.records[32].images[2]
+            } ))
+
+        # Spider!
+        self.addsprite(79, 0, variablesprite({
+            -3 : graphics.records[43].images[12],
+            -2 : graphics.records[43].images[11],
+            -1 : graphics.records[43].images[10],
+            0 : graphics.records[43].images[9],
+            1 : graphics.records[43].images[0],
+            2 : graphics.records[43].images[1],
+            3 : graphics.records[43].images[2],
+            4 : graphics.records[43].images[3]
+            } ))
+
+        # Robot with Treads
+        self.addsprite(82, 0, variablesprite({
+            -4 : graphics.records[59].images[21],
+            -3 : graphics.records[59].images[21],
+            -2 : graphics.records[59].images[20],
+            -1 : graphics.records[59].images[19],
+            0 : graphics.records[59].images[18],
+            1 : graphics.records[59].images[14],
+            2 : graphics.records[59].images[15],
+            3 : graphics.records[59].images[16],
+            4 : graphics.records[59].images[17],
+            } ))
+
+        # Small fish
+        self.addsprite(83, 0, variablesprite({
+            0 : graphics.records[40].images[22],
+            2 : graphics.records[40].images[26]
+            } ))
 
         # Pickups appear to be in the same order as their corresponding record.
         # There are two types of pickups: normal and hidden.
         for subtype in range(24):
-            self.addsprite(33, subtype, sprite(graphics.records[37].images[subtype]))
+            self.addsprite(33, subtype, sprite(graphics.records[37].images[subtype],
+                hidelabel=True))
             self.addsprite(73, subtype, sprite(graphics.semitransparent(
                 graphics.records[37].images[subtype], 128) ))
 
@@ -212,7 +330,7 @@ class spritedb(object):
                (16, 0, 59, 4), (8, 12, 59, 1)]),
             4 : graphics.semitransparent(
                 graphics.records[37].images[0], 128)},
-            field='variant'))
+            field='variant', hidelabel=True))
 
         # Story Scenes:
         for subtype in range(24):
@@ -227,19 +345,28 @@ class spritedb(object):
         # 63-# Start?
         for sprtype in [17, 63]:
             for subtype in range(-1, 11):
-                self.addsprite(sprtype, subtype, sprite(graphics.records[30].images[19]))
+                self.addsprite(sprtype, subtype, sprite(graphics.records[30].images[19],
+                    hidelabel=True))
 
-        # 63-3: Start??
-        # 61:0, 62:0: Doorway
-        # 71-0: Sign? 71-1 Popup message?
         for sprtype, subtype in [
-            (61,0), (62,0), # Warp Doorway
-            (19,0), # Map label? (TODO: Implement via compound sprite?)
-            (71,0), (71,1), # Sign & Popup Message?
-            (8, 0), (8, 1), # Switchable Pillar Wall
-            (9, -1) # Locked Map Gate
-            ]:
+                (19,0), # Map label? (TODO: Implement via compound sprite?)
+                (8, 0), (8, 1), # Switchable Pillar Wall
+                ]:
             self.addsprite(sprtype, subtype, sprite(graphics.records[30].images[19]))
+
+        for sprtype, subtype in [
+                (71,0), (71,1), # Sign & Popup Message?
+                (9, -1) # Locked Map Gate
+                ]:
+            self.addsprite(sprtype, subtype, sprite(graphics.records[30].images[19],
+                hidelabel=True))
+
+
+        # Warp Doorways:
+        self.addsprite(61, 0, sprite(graphics.records[30].images[19],
+            labeloffs = (4, 4))) # Out Door
+        self.addsprite(62, 0, sprite(graphics.records[30].images[19],
+            labelpref='To ', labeloffs = (0, 4))) # In Door
 
         # Cache a reference to the graphics object for future use
         self.graphics = graphics
@@ -254,8 +381,7 @@ class spritedb(object):
 
             self.sprites[objrec.sprtype][objrec.subtype].draw(mappicture, objrec, mapdata)
 
-            #if objrec.info != 0:
-            #    self.drawlabel(mappicture, (objrec.x -8, objrec.y -8), str(objrec.info))
+
         except:
             print "Problem with Sprite {}, Type {}, Appearance {}, Variant {} at ({}, {})".format(
                 objrec.sprtype, objrec.subtype, objrec.appearance, objrec.variant,
@@ -263,32 +389,36 @@ class spritedb(object):
             traceback.print_exc()
 
 
-
-    def drawlabel(self, mappicture, coords, text):
-        # Draw the text 5 times to create an outline
-        # (4 x black then 1 x white)
-        pen = ImageDraw.Draw(mappicture)
-        for offset, colour in [( (-1,-1), (0,0,0) ),
-                ( (-1,1), (0,0,0) ),
-                ( (1,-1), (0,0,0) ),
-                ( (1,1), (0,0,0) ),
-                ( (0,0), (255,255,255) )]:
-            pen.text((coords[0] + offset[0], coords[1] + offset[1]),
-                text, font=self.markupfont, fill=colour)
-
-
-
 class sprite(object):
-    def __init__(self, image, xoffs=0, yoffs=0):
+    def __init__(self, image, xoffs=0, yoffs=0, hidelabel=False,
+            labelpref='', labeloffs=(-8, -8)):
         self.image = image
         self.xoffs = xoffs
         self.yoffs = yoffs
+        self.hidelabel = hidelabel
+        self.labelpref = labelpref
+        self.labeloffs = labeloffs
 
     def draw(self, mappicture, objrec, mapdata):
         # When pasting masked images, need to specify the mask for the paste.
         # RGBA images can be used as their own masks.
         mappicture.paste(self.image, (objrec.x +self.xoffs,
             objrec.y +self.yoffs), self.image)
+
+        if objrec.info != 0 and objrec.info < 90 and not self.hidelabel:
+            text = "{}{}".format(self.labelpref, objrec.info)
+
+            # Draw the text 5 times to create an outline
+            # (4 x black then 1 x white)
+            pen = ImageDraw.Draw(mappicture)
+            for offset, colour in [( (-1,-1), (0,0,0) ),
+                    ( (-1,1), (0,0,0) ),
+                    ( (1,-1), (0,0,0) ),
+                    ( (1,1), (0,0,0) ),
+                    ( (0,0), (255,255,255) )]:
+                pen.text( (objrec.x +self.xoffs +offset[0] +self.labeloffs[0],
+                    objrec.y +self.yoffs +offset[1] +self.labeloffs[0]),
+                    text, font=markupfont, fill=colour)
 
 
 class textsprite(sprite):
@@ -311,7 +441,8 @@ class textsprite(sprite):
 
 
 class variablesprite(sprite):
-    def __init__(self, imagelookup, contents=None, field='appearance', offsets=None):
+    def __init__(self, imagelookup, contents=None, field='appearance',
+            offsets=None, hidelabel=False, labelpref='', labeloffs=(-8, -8)):
         # Create a lookup of possible boxes
         self.types = imagelookup
         self.xoffs = 0
@@ -319,6 +450,9 @@ class variablesprite(sprite):
         self.contents = contents
         self.offsets = offsets
         self.field = field
+        self.hidelabel = hidelabel
+        self.labelpref = labelpref
+        self.labeloffs = labeloffs
 
     def draw(self, mappicture, objrec, mapdata):
         # Pick the correct image then use the parent routine to draw the box

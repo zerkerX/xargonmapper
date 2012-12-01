@@ -87,10 +87,20 @@ class xargonmap(object):
             writer = csv.writer(csvfile)
             writer.writerows([obj.rawdata for obj in self.objs])
 
-        # Finally, the header and strings list:
+        # The header and strings list:
         with open(self.name + '_info.csv', 'wb') as csvfile:
             writer = csv.writer(csvfile)
             writer.writerow(list(self.unknown) + self.strings)
+
+        # Standalone debug string list:
+        with open(self.name + '_strings.csv', 'wb') as csvfile:
+            writer = csv.writer(csvfile)
+            for stringnum, lookupval in enumerate(self.stringlookup):
+                writer.writerow([stringnum, lookupval, self.strings[stringnum]])
+
+
+
+
 
     def debugimage(self):
         # Turn the map data into a list of 3-byte tuples to visualize it.

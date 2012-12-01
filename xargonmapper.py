@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License along
 # with Xargon Mapper Mapper.
 # If not, see <http://www.gnu.org/licenses/>.
-import sys
+import sys, pdb
 from PIL import Image
 from xargonmap import xargonmap
 from xargongraphics import imagefile
@@ -43,6 +43,8 @@ class xargonmapper(object):
             graphics.changepalette(0)
         sprites = spritedb(graphics)
 
+        self.preprocessmap(mapdata)
+
         for index, tileval in enumerate(mapdata.tiles):
             # Remember: maps are height first
             (x, y) = (index/64, index%64)
@@ -53,6 +55,39 @@ class xargonmapper(object):
             sprites.drawsprite(self.mappicture, objrecord, mapdata)
         for objrecord in mapdata.text:
             sprites.drawsprite(self.mappicture, objrecord, mapdata)
+
+    def preprocessmap(self, mapdata):
+        switchlocations = []
+        doorinfos = []
+
+        # First loop: find all door info values and move doubled up sprites.
+        for objrec in mapdata.sprites:
+            if objrec.sprtype == 12:
+                while (objrec.x + objrec.y*128*16) in switchlocations:
+                    objrec.y += 8
+                switchlocations.append(objrec.x + objrec.y*128*16)
+
+            if objrec.sprtype == 9:
+                doorinfos.append(objrec.info)
+
+        # Second loop: Erase switches that align with doors
+        for objrec in mapdata.sprites:
+            if objrec.sprtype == 12 and objrec.info in doorinfos:
+                objrec.info = 0
+
+        # String adjust for STORY map:
+        if mapdata.name.upper() == 'STORY':
+            page3to5 = mapdata.stringlookup[117:120]
+            page6 = mapdata.stringlookup[82]
+            page7 = mapdata.stringlookup[81]
+            page8 = mapdata.stringlookup[84]
+            page9 = mapdata.stringlookup[83]
+            page10 = mapdata.stringlookup[116]
+
+            del mapdata.stringlookup[116:120]
+            del mapdata.stringlookup[81:85]
+
+            mapdata.stringlookup[81:81] = page3to5 + [page6, page7, page8, page9, page10]
 
     def save(self):
         self.mappicture.save(self.name + '.png')
