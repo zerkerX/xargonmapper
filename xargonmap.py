@@ -25,6 +25,8 @@ class xargonmap(object):
         (temppath, tempfname) = os.path.split(filename)
         (self.name, tempext) = os.path.splitext(tempfname)
 
+        self.epnum = int(tempext[-1])
+
         # Load the map data as a 64*128 array of 16 bit values:
         mapfile = open(filename, 'rb')
         pattern = '<{}H'.format(64*128)
@@ -42,8 +44,8 @@ class xargonmap(object):
             for i in range(numobjs)]
 
         # Create separate sprite and text lists:
-        self.text = [obj for obj in self.objs if obj.sprtype in [6, 7] ]
-        self.sprites = [obj for obj in self.objs if obj.sprtype not in [6, 7] ]
+        self.text = [obj for obj in self.objs if obj.sprtype in [6, 7, 12, 61, 62] ]
+        self.sprites = [obj for obj in self.objs if obj.sprtype not in [6, 7, 12, 61, 62] ]
 
         # There always appears to be a 0x61 byte unknown region between
         # the records and strings. Let's just collect it as bytes for now.
@@ -97,10 +99,6 @@ class xargonmap(object):
             writer = csv.writer(csvfile)
             for stringnum, lookupval in enumerate(self.stringlookup):
                 writer.writerow([stringnum, lookupval, self.strings[stringnum]])
-
-
-
-
 
     def debugimage(self):
         # Turn the map data into a list of 3-byte tuples to visualize it.

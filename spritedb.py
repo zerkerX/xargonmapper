@@ -35,7 +35,7 @@ class spritedb(object):
         self.sprites = {}
         self.graphics = graphics
 
-    def __init__(self, graphics):
+    def __init__(self, graphics, epnum):
         self.sprites = {}
 
         # Manually-defined sprites (i.e. special handling needed
@@ -53,6 +53,8 @@ class spritedb(object):
 
         # Variant of Compound and semi-transparent for hidden platform(s)
         self.addsprite(11, 0, variablesprite({
+            2: graphics.debugimage(11, 'T2', 32, 16),
+            4: graphics.debugimage(11, 'T4', 32, 16),
             6: graphics.semitransparent(
                graphics.compositeimage((32, 16), [(0, 0, 25, 14),
                (16, 0, 25, 15)]), 128),
@@ -68,7 +70,7 @@ class spritedb(object):
                 (18, 0, 36, 0), # Manual Elevator
                 (21, 0, 37, 33), # Health Pickup
                 (22, 0, 30, 28), # Emerald
-                (23, 17, 45, 1), # Eagle
+                (23, 13, 45, 1), (23, 17, 45, 1), # Eagle
                 (24, 0, 34, 0), # EPIC Points
                 (28, 6, 40, 21), # Diving Pod
                 (28, 0, 30, 15), (28, 4, 30, 17), (28, 5, 30, 18),
@@ -78,6 +80,7 @@ class spritedb(object):
                 (38, 0, 30, 50), (38, 1, 30, 51), (38, 2, 30, 52), # Menu Bullets
                 (40, 0, 30, 62), # Star
                 (42, 0, 37, 29), # Green Gem (TBC)
+                (42, 1, 37, 30), # Purple Gem
                 (42, 3, 37, 32), # Yellow Gem
                 (44, 0, 15, 2), # Stalagtite
                 (45, 0, 36, 19), # Boulder Trap
@@ -138,6 +141,7 @@ class spritedb(object):
                 (26, 0, 37, 33), # Health
                 (26, 1, 37, 2), # Grapes
                 (26, 2, 37, 6), # Cherry
+                (26, 3, 37, 8), # Strawberries
                 (26, 4, 37, 14), # Orange
                 (26, 11, 30, 28), # Emerald
                 (26, 12, 48, 2), # Nitro!
@@ -227,18 +231,22 @@ class spritedb(object):
             2 : graphics.records[58].images[6]
             } ))
 
-        # Flying Robots
-        self.addsprite(60, 0, variablesprite({
-            0 : graphics.records[59].images[1]
-            } ))
-        self.addsprite(60, 1, variablesprite({
-            0 : graphics.records[59].images[4]
-            } ))
-        self.addsprite(60, 2, variablesprite({
-            0 : graphics.records[59].images[7]
-            } ))
+        # Mini Dino
+        if epnum != 1:
+            self.addsprite(58, 0, variablesprite({
+                -2 : graphics.records[56].images[6],
+                -1 : graphics.records[56].images[5],
+                0 : graphics.records[56].images[4],
+                1 : graphics.records[56].images[1],
+                2 : graphics.records[56].images[0],
+                } ))
 
-        (64, 0, 39, 6), # Shrimp
+        # Flying Robots
+        self.addsprite(60, 0, sprite(graphics.records[59].images[1]))
+        self.addsprite(60, 1, sprite(graphics.records[59].images[4]))
+        self.addsprite(60, 2, sprite(graphics.records[59].images[7]))
+
+        # Shrimp
         self.addsprite(64, 0, variablesprite({
             0 : graphics.records[25].images[2],
             2 : graphics.records[25].images[10],
@@ -259,23 +267,37 @@ class spritedb(object):
 
         # Big Fish
         self.addsprite(68, 0, variablesprite({
+            -3 : graphics.records[40].images[8],
             -2 : graphics.records[40].images[7],
             0 : graphics.records[40].images[6],
             2 : graphics.records[40].images[11],
-            3 : graphics.records[40].images[12]
+            3 : graphics.records[40].images[12],
+            4 : graphics.records[40].images[13]
             } ))
 
+        # Evil Bunny
+        if epnum != 1:
+            self.addsprite(70, 0, variablesprite({
+                0 : graphics.records[63].images[4],
+                2 : graphics.records[63].images[1],
+                } ))
+
+
         # Skull Slug!
-        self.addsprite(75, 0, variablesprite({
-            -1 : graphics.records[62].images[2],
-            0 : graphics.records[62].images[0],
-            1 : graphics.records[62].images[5],
-            2 : graphics.records[62].images[3]
-            }, hidelabel=True ))
+        if epnum != 2:
+            self.addsprite(75, 0, variablesprite({
+                -1 : graphics.records[62].images[2],
+                0 : graphics.records[62].images[0],
+                1 : graphics.records[62].images[5],
+                2 : graphics.records[62].images[3]
+                }, hidelabel=True ))
 
         # Bee!
         self.addsprite(77, 0, variablesprite({
+            -2 : graphics.records[32].images[1],
+            -1 : graphics.records[32].images[1],
             0 : graphics.records[32].images[0],
+            1 : graphics.records[32].images[3],
             2 : graphics.records[32].images[2]
             } ))
 
@@ -323,19 +345,22 @@ class spritedb(object):
         # 1 : Flaming Face Jet (Down)
         # 2 : Flaming Lava Jet (Up)
         # 3 : Robot Spawner
+        # 5 : TBC
         self.addsprite(73, 0, variablesprite({
             1 : graphics.records[30].images[19],
             2 : graphics.records[30].images[19],
             3 : graphics.compositeimage((32, 32), [(0, 0, 59, 1),
                (16, 0, 59, 4), (8, 12, 59, 1)]),
             4 : graphics.semitransparent(
-                graphics.records[37].images[0], 128)},
+                graphics.records[37].images[0], 128),
+            5 : graphics.debugimage(73, 'T5', 16, 16)},
             field='variant', hidelabel=True))
 
         # Story Scenes:
-        for subtype in range(24):
-            self.addsprite(85, subtype, sprite(graphics.records[56].images[subtype]))
-            self.addsprite(86, subtype, sprite(graphics.records[57].images[subtype]))
+        if epnum == 1:
+            for subtype in range(24):
+                self.addsprite(85, subtype, sprite(graphics.records[56].images[subtype]))
+                self.addsprite(86, subtype, sprite(graphics.records[57].images[subtype]))
 
 
         # Empty sprites:
@@ -405,7 +430,7 @@ class sprite(object):
         mappicture.paste(self.image, (objrec.x +self.xoffs,
             objrec.y +self.yoffs), self.image)
 
-        if objrec.info != 0 and objrec.info < 90 and not self.hidelabel:
+        if objrec.info > 0 and objrec.info < 90 and not self.hidelabel:
             text = "{}{}".format(self.labelpref, objrec.info)
 
             # Draw the text 5 times to create an outline

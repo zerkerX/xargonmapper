@@ -47,6 +47,8 @@ class imagefile(object):
         filesize = os.path.getsize(filename)
         graphicsfile = open(filename, 'rb')
 
+        self.epnum = int(filename[-1])
+
         header = '<128L'
         headerdata = struct.unpack(header,
             graphicsfile.read(struct.calcsize(header)) )
@@ -59,7 +61,7 @@ class imagefile(object):
             for (offset, size) in zip(headerdata, headerdata2)]
 
         self.palette = {}
-        for i in range(6):
+        for i in range(10):
             palimage = Image.open('palimage{}.png'.format(i) )
             self.palette[i] = palimage.getpalette()
 
@@ -67,7 +69,12 @@ class imagefile(object):
         self.palette[-1] = self.records[5].getpalette()
         self.palette[-2] = self.records[53].getpalette()
 
-        self.activepal = 0
+        if self.epnum == 2:
+            self.activepal = 6
+        elif self.epnum == 3:
+            self.activepal = 7
+        else:
+            self.activepal = 0
 
         # Load the image data
         for recnum, record in enumerate(self.records):
@@ -211,5 +218,5 @@ TODO
         for filename in sys.argv[1:]:
             xargonimages = imagefile(filename)
             xargonimages.debug_csv('debug.csv')
-            xargonimages.save('Images')
-            xargonimages.save('OriginalImages', masked=False)
+            xargonimages.save('Episode{}Images'.format(xargonimages.epnum))
+            xargonimages.save('Episode{}OriginalImages'.format(xargonimages.epnum), masked=False)
