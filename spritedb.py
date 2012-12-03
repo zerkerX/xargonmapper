@@ -76,6 +76,7 @@ class spritedb(object):
                 (28, 0, 30, 15), (28, 4, 30, 17), (28, 5, 30, 18),
                 (28, 7, 30, 20), (28, 8, 30, 21), (28, 9, 30, 22), # Powerups
                 (28, 1, 30, 16), # Purple Key
+                (31, 0, 51, 14), # Hidden Spikey Creature
                 (33, 28, 37, 28), # Fireball
                 (38, 0, 30, 50), (38, 1, 30, 51), (38, 2, 30, 52), # Menu Bullets
                 (40, 0, 30, 62), # Star
@@ -143,6 +144,8 @@ class spritedb(object):
                 (26, 2, 37, 6), # Cherry
                 (26, 3, 37, 8), # Strawberries
                 (26, 4, 37, 14), # Orange
+                (26, 6, 31, 0), # Yellow Key
+                (26, 8, 31, 16), # Red Key
                 (26, 11, 30, 28), # Emerald
                 (26, 12, 48, 2), # Nitro!
                 (26, 13, 36, 29) # Empty
@@ -162,14 +165,6 @@ class spritedb(object):
         self.addsprite(29, 1, sprite(graphics.records[36].images[24],
             labelpref = "SW "))
 
-        # TODO: The following sprite types COULD draw corresponding trigger identifiers:
-        # 8 : Switchable Wall/Floor
-        # 11 : Hidden Platforms
-        # 12 : Pickup Switch
-        # 29 : Toggle switch
-        # 26 : Treasure (Drops)
-        # 44 : Stalagtites (Drops)
-        # 61. 62 : Warp Doorways (link number)
 
         # Menu Flame Jets:
         self.addsprite(47, 0, variablesprite({
@@ -231,8 +226,12 @@ class spritedb(object):
             2 : graphics.records[58].images[6]
             } ))
 
-        # Mini Dino
+
         if epnum != 1:
+            # Goo Monster
+            self.addsprite(56, 0, sprite(graphics.records[46].images[2]))
+
+            # Mini Dino
             self.addsprite(58, 0, variablesprite({
                 -2 : graphics.records[56].images[6],
                 -1 : graphics.records[56].images[5],
@@ -275,8 +274,11 @@ class spritedb(object):
             4 : graphics.records[40].images[13]
             } ))
 
-        # Evil Bunny
+
         if epnum != 1:
+            # Bat
+            self.addsprite(69, 0, sprite(graphics.records[56].images[8]))
+
             self.addsprite(70, 0, variablesprite({
                 0 : graphics.records[63].images[4],
                 2 : graphics.records[63].images[1],
