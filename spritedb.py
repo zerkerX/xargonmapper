@@ -70,13 +70,12 @@ class spritedb(object):
                 (18, 0, 36, 0), # Manual Elevator
                 (21, 0, 37, 33), # Health Pickup
                 (22, 0, 30, 28), # Emerald
-                (23, 13, 45, 1), (23, 17, 45, 1), # Eagle
                 (24, 0, 34, 0), # EPIC Points
                 (28, 6, 40, 21), # Diving Pod
                 (28, 0, 30, 15), (28, 4, 30, 17), (28, 5, 30, 18),
                 (28, 7, 30, 20), (28, 8, 30, 21), (28, 9, 30, 22), # Powerups
                 (28, 1, 30, 16), # Purple Key
-                (31, 0, 51, 14), # Hidden Spikey Creature
+                (31, 0, 51, 14), (31, 1, 51, 14), # Hidden Spikey Creature
                 (33, 28, 37, 28), # Fireball
                 (38, 0, 30, 50), (38, 1, 30, 51), (38, 2, 30, 52), # Menu Bullets
                 (40, 0, 30, 62), # Star
@@ -105,7 +104,6 @@ class spritedb(object):
         # Simple mapping to hide info label:
         for (sprtype, subtype, recnum, imagenum) in [
                 (13, 0, 36, 2), # Springboard
-                (46, 0, 51, 7), (46, 1, 51, 7), # Spike ball
                 (49, 0, 48, 12), # Torch
                 ]:
             self.addsprite(sprtype, subtype, sprite(graphics.records[recnum].images[imagenum],
@@ -120,11 +118,17 @@ class spritedb(object):
         self.addsprite(88, -1, sprite(
             graphics.records[47].images[16], xoffs=2, yoffs=2))
 
+        # Silvertongue
+        for i in range (25):
+            self.addsprite(23, i, sprite(graphics.records[45].images[1]))
+
         # Crushing Ceilings:
         for i in range (16):
             self.addsprite(15, i, sprite(graphics.records[36].images[6]))
 
         # Illusionary Walls:
+        self.addsprite(72, 3, sprite(graphics.semitransparent(
+                graphics.records[20].images[8], 160) ))
         self.addsprite(72, 5, sprite(graphics.semitransparent(
                 graphics.records[11].images[23], 160) ))
         self.addsprite(72, 6, sprite(graphics.semitransparent(
@@ -144,8 +148,11 @@ class spritedb(object):
                 (26, 2, 37, 6), # Cherry
                 (26, 3, 37, 8), # Strawberries
                 (26, 4, 37, 14), # Orange
+                (26, 5, 37, 3), # Epic Disk
                 (26, 6, 31, 0), # Yellow Key
+                (26, 7, 31, 8), # Green Key
                 (26, 8, 31, 16), # Red Key
+                (26, 9, 31, 24), # Blue Key
                 (26, 11, 30, 28), # Emerald
                 (26, 12, 48, 2), # Nitro!
                 (26, 13, 36, 29) # Empty
@@ -172,6 +179,13 @@ class spritedb(object):
             8 : graphics.records[48].images[4]},
             field='info', hidelabel=True))
 
+        # Bouncing Balls:
+        for i in range(2):
+            self.addsprite(46, i, variablesprite({
+                0 : graphics.records[51].images[4],
+                3 : graphics.records[51].images[7]},
+                field='info', hidelabel=True))
+
         # Spikes:
         self.addsprite(59, 0, variablesprite({
             0 : graphics.records[36].images[28],
@@ -179,11 +193,12 @@ class spritedb(object):
             field='variant', hidelabel=True))
 
         # Ceiling Spear
-        self.addsprite(43, 0, variablesprite({
-            0 : graphics.records[36].images[9],
-            1 : graphics.records[36].images[12]},
-            offsets={0: (0, 0), 1:(0, -4) },
-            field='variant', hidelabel=True))
+        for i in range(3):
+            self.addsprite(43, i, variablesprite({
+                0 : graphics.records[36].images[9],
+                1 : graphics.records[36].images[12]},
+                offsets={0: (0, 0), 1:(0, -4) },
+                field='variant', hidelabel=True))
 
         # Snake Face
         self.addsprite(50, 0, variablesprite({
@@ -247,8 +262,8 @@ class spritedb(object):
 
         # Shrimp
         self.addsprite(64, 0, variablesprite({
-            0 : graphics.records[25].images[2],
-            2 : graphics.records[25].images[10],
+            0 : graphics.records[39].images[2],
+            2 : graphics.records[39].images[10],
             } ))
 
         # Evil Cloak Guy
