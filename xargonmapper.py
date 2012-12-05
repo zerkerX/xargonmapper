@@ -31,7 +31,8 @@ class xargonmapper(object):
 
         if self.epnum == 2:
             # Episode 2
-            if self.name.upper() in ['BOARD_01', 'BOARD_08']:
+            if self.name.upper() in ['BOARD_01', 'BOARD_08',
+                    'BOARD_15', 'BOARD_32']:
                 graphics.changepalette(8)
             elif self.name.upper() in ['BOARD_03']:
                 graphics.changepalette(9)
@@ -108,6 +109,13 @@ class xargonmapper(object):
             del mapdata.stringlookup[81:85]
 
             mapdata.stringlookup[81:81] = page3to5 + [page6, page7, page8, page9, page10]
+
+        # String adjust for Episode 2 Ending:
+        if mapdata.name.upper() == 'BOARD_32' and mapdata.epnum == 2:
+            blank = mapdata.stringlookup[-1]
+
+            del mapdata.stringlookup[-1]
+            mapdata.stringlookup.insert(8, blank)
 
     def save(self):
         epfolder = 'Episode{}'.format(self.epnum)
