@@ -183,6 +183,8 @@ class spritedb(object):
         for i in range(2):
             self.addsprite(46, i, variablesprite({
                 0 : graphics.records[51].images[4],
+                1 : graphics.debugimage(46, 'T1', 32, 16),
+                2 : graphics.debugimage(46, 'T2', 32, 16),
                 3 : graphics.records[51].images[7]},
                 field='info', hidelabel=True))
 
@@ -241,11 +243,11 @@ class spritedb(object):
             2 : graphics.records[58].images[6]
             } ))
 
-
-        if epnum != 1:
+        if epnum == 2:
             # Goo Monster
             self.addsprite(56, 0, sprite(graphics.records[46].images[2]))
 
+        if epnum != 1:
             # Mini Dino
             self.addsprite(58, 0, variablesprite({
                 -2 : graphics.records[56].images[6],

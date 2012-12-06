@@ -61,7 +61,7 @@ class imagefile(object):
             for (offset, size) in zip(headerdata, headerdata2)]
 
         self.palette = {}
-        for i in range(14):
+        for i in range(17):
             palimage = Image.open('palimage{}.png'.format(i) )
             self.palette[i] = palimage.getpalette()
 
