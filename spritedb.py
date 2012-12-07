@@ -75,6 +75,7 @@ class spritedb(object):
                 (28, 0, 30, 15), (28, 4, 30, 17), (28, 5, 30, 18),
                 (28, 7, 30, 20), (28, 8, 30, 21), (28, 9, 30, 22), # Powerups
                 (28, 1, 30, 16), # Purple Key
+                (30, 0, 51, 9), (30, 1, 51, 8), # Ceiling Switch
                 (31, 0, 51, 14), (31, 1, 51, 14), # Hidden Spikey Creature
                 (33, 28, 37, 28), # Fireball
                 (38, 0, 30, 50), (38, 1, 30, 51), (38, 2, 30, 52), # Menu Bullets
@@ -172,6 +173,10 @@ class spritedb(object):
         self.addsprite(29, 1, sprite(graphics.records[36].images[24],
             labelpref = "SW "))
 
+        # Timers:
+        for i in [30, 40, 50, 60]:
+            self.addsprite(73, i, sprite(graphics.records[30].images[19],
+                labelpref="Timer ", labeloffs = (-4, 4)) )
 
         # Menu Flame Jets:
         self.addsprite(47, 0, variablesprite({
