@@ -56,6 +56,12 @@ class xargonmapper(object):
                 graphics.changepalette(16)
             elif self.name.upper() in ['BOARD_07']:
                 graphics.changepalette(17)
+            elif self.name.upper() in ['BOARD_11']:
+                graphics.changepalette(18)
+            elif self.name.upper() in ['BOARD_13']:
+                graphics.changepalette(19)
+            elif self.name.upper() in ['BOARD_12']:
+                graphics.changepalette(20)
             else:
                 graphics.changepalette(7)
         else:

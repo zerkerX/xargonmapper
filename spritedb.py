@@ -53,7 +53,9 @@ class spritedb(object):
 
         # Variant of Compound and semi-transparent for hidden platform(s)
         self.addsprite(11, 0, variablesprite({
-            2: graphics.debugimage(11, 'T2', 32, 16),
+            2: graphics.semitransparent(
+               graphics.compositeimage((16, 32), [(0, 0, 8, 18),
+               (0, 16, 8, 21)]), 128),
             4: graphics.debugimage(11, 'T4', 32, 16),
             6: graphics.semitransparent(
                graphics.compositeimage((32, 16), [(0, 0, 25, 14),
@@ -80,8 +82,9 @@ class spritedb(object):
                 (33, 28, 37, 28), # Fireball
                 (38, 0, 30, 50), (38, 1, 30, 51), (38, 2, 30, 52), # Menu Bullets
                 (40, 0, 30, 62), # Star
-                (42, 0, 37, 29), # Green Gem (TBC)
+                (42, 0, 37, 29), # Green Gem
                 (42, 1, 37, 30), # Purple Gem
+                (42, 2, 37, 31), # Red Gem
                 (42, 3, 37, 32), # Yellow Gem
                 (44, 0, 15, 2), # Stalagtite
                 (45, 0, 36, 19), # Boulder Trap
@@ -119,6 +122,15 @@ class spritedb(object):
         self.addsprite(88, -1, sprite(
             graphics.records[47].images[16], xoffs=2, yoffs=2))
 
+        # Xargon's castle:
+        if epnum == 3:
+            self.addsprite(88, 7,  sprite(graphics.records[47].images[25], yoffs=6, xoffs=4))
+            self.addsprite(88, 8,  sprite(graphics.records[47].images[26], yoffs=6, xoffs=10))
+            self.addsprite(88, 9,  sprite(graphics.records[47].images[27]))
+            self.addsprite(88, 10, sprite(graphics.records[47].images[28], xoffs=4))
+            self.addsprite(88, 11, sprite(graphics.records[47].images[29], xoffs=10))
+            self.addsprite(88, 12, sprite(graphics.records[47].images[30]))
+
         # Silvertongue
         for i in range (25):
             self.addsprite(23, i, sprite(graphics.records[45].images[1]))
@@ -154,6 +166,7 @@ class spritedb(object):
                 (26, 7, 31, 8), # Green Key
                 (26, 8, 31, 16), # Red Key
                 (26, 9, 31, 24), # Blue Key
+                (26, 10, 30, 21), # High-jump shoes
                 (26, 11, 30, 28), # Emerald
                 (26, 12, 48, 2), # Nitro!
                 (26, 13, 36, 29) # Empty
@@ -189,7 +202,7 @@ class spritedb(object):
             self.addsprite(46, i, variablesprite({
                 0 : graphics.records[51].images[4],
                 1 : graphics.debugimage(46, 'T1', 32, 16),
-                2 : graphics.debugimage(46, 'T2', 32, 16),
+                2 : graphics.records[51].images[6],
                 3 : graphics.records[51].images[7]},
                 field='info', hidelabel=True))
 
@@ -248,6 +261,17 @@ class spritedb(object):
             2 : graphics.records[58].images[6]
             } ))
 
+        if epnum == 3:
+            # Snake-like thing
+            self.addsprite(54, 0, variablesprite({
+                -3 : graphics.records[42].images[3],
+                -2 : graphics.records[42].images[2],
+                -1 : graphics.records[42].images[1],
+                0 : graphics.records[42].images[0],
+                2 : graphics.records[42].images[5],
+                4 : graphics.records[42].images[6]
+                } ))
+
         if epnum == 2:
             # Goo Monster
             self.addsprite(56, 0, sprite(graphics.records[46].images[2]))
@@ -274,10 +298,11 @@ class spritedb(object):
             } ))
 
         # Evil Cloak Guy
-        self.addsprite(65, 0, variablesprite({
-            0 : graphics.records[54].images[5],
-            2 : graphics.records[54].images[0],
-            } ))
+        for i in range(2):
+            self.addsprite(65, i, variablesprite({
+                0 : graphics.records[54].images[5],
+                2 : graphics.records[54].images[0],
+                } ))
 
         # Eel
         self.addsprite(67, 0, variablesprite({
