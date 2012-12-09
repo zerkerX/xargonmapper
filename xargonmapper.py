@@ -18,7 +18,7 @@
 # If not, see <http://www.gnu.org/licenses/>.
 import sys, pdb, os
 from PIL import Image
-from xargonmap import xargonmap
+from xargonmap import xargonmap, objrecord
 from xargongraphics import imagefile, createpath
 from xargontiles import tilefile
 from spritedb import spritedb
@@ -131,6 +131,11 @@ class xargonmapper(object):
 
             del mapdata.stringlookup[-1]
             mapdata.stringlookup.insert(8, blank)
+
+        # Fake Sprite for Episode 3 Ending:
+        if mapdata.name.upper() == 'BOARD_32' and mapdata.epnum == 3:
+            mapdata.sprites.append(objrecord( (1000, 48, 240, 0, 0, 160, 160,
+                0, 0, 0, 0, 0, 0, 0, 0) ))
 
     def save(self):
         epfolder = 'Episode{}'.format(self.epnum)

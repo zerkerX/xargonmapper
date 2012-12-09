@@ -56,7 +56,10 @@ class spritedb(object):
             2: graphics.semitransparent(
                graphics.compositeimage((16, 32), [(0, 0, 8, 18),
                (0, 16, 8, 21)]), 128),
-            4: graphics.debugimage(11, 'T4', 32, 16),
+            4: graphics.semitransparent(
+               graphics.compositeimage((48, 32), [(0, 0, 11, 1),
+               (16, 0, 11, 1), (0, 16, 11, 2), (16, 16, 11, 2),
+               (32, 0, 11, 19), (32, 16, 11, 19)]), 128),
             6: graphics.semitransparent(
                graphics.compositeimage((32, 16), [(0, 0, 25, 14),
                (16, 0, 25, 15)]), 128),
@@ -201,7 +204,7 @@ class spritedb(object):
         for i in range(2):
             self.addsprite(46, i, variablesprite({
                 0 : graphics.records[51].images[4],
-                1 : graphics.debugimage(46, 'T1', 32, 16),
+                1 : graphics.records[51].images[5],
                 2 : graphics.records[51].images[6],
                 3 : graphics.records[51].images[7]},
                 field='info', hidelabel=True))
@@ -389,33 +392,53 @@ class spritedb(object):
             self.addsprite(73, subtype, sprite(graphics.semitransparent(
                 graphics.records[37].images[subtype], 128) ))
 
-        # Special case for 73, type 0. Variant 4 appears to be the pickup item.
-        # Other variants (all rendered invisible) appear to be:
-        # 1 : Flaming Face Jet (Down)
-        # 2 : Flaming Lava Jet (Up)
+        # Special case for 73, Variant 4 appears to be the pickup item.
+        # Other variants appear to be:
+        # 0 : Unused??
+        # 1 : Flaming Face Jet (Down) (Invisible)
+        # 2 : Flaming Lava Jet (Up) (Invisible)
         # 3 : Robot Spawner
-        # 5 : TBC
-        self.addsprite(73, 0, variablesprite({
-            1 : graphics.records[30].images[19],
-            2 : graphics.records[30].images[19],
-            3 : graphics.compositeimage((32, 32), [(0, 0, 59, 1),
-               (16, 0, 59, 4), (8, 12, 59, 1)]),
-            4 : graphics.semitransparent(
-                graphics.records[37].images[0], 128),
-            5 : graphics.debugimage(73, 'T5', 16, 16)},
-            field='variant', hidelabel=True))
+        # 5 : Slug Spawner
+        # These alternate forms only appear to show up for subtypes 0 and 1,
+        # so they will be added just for these two numbers:
+
+        # Episode 2 doesn't have the skull slug, so we need an alternate
+        # sprite so it doesn't crash.
+        if epnum != 2:
+            slugspawner = graphics.compositeimage((32, 14),
+                    [(2, 0, 62, 2), (-3, 0, 62, 0)])
+        else:
+            slugspawner = graphics.records[30].images[19]
+
+        for i in range(2):
+            self.addsprite(73, i, variablesprite({
+                0 : graphics.records[30].images[19],
+                1 : graphics.records[30].images[19],
+                2 : graphics.records[30].images[19],
+                3 : graphics.compositeimage((32, 32), [(0, 0, 59, 1),
+                   (16, 0, 59, 4), (8, 12, 59, 1)]),
+                4 : graphics.semitransparent(
+                    graphics.records[37].images[i], 128),
+                5 : slugspawner},
+                field='variant', hidelabel=True))
 
         # Story Scenes:
         if epnum == 1:
             for subtype in range(24):
                 self.addsprite(85, subtype, sprite(graphics.records[56].images[subtype]))
                 self.addsprite(86, subtype, sprite(graphics.records[57].images[subtype]))
-
+        elif epnum == 3:
+            # Fake sprite for the ending scene (which does not appear to have a sprite OR use Tiles):
+            tilelist = []
+            for x in range(10):
+                for y in range(10):
+                    tilelist.append( (x*16, y*16, 57, x + 10*y) )
+            self.addsprite(1000, 0, sprite(graphics.compositeimage((160, 160), tilelist)))
 
         # Empty sprites:
         # -------------------------
         # For future reference, possible meanings are:
-        # 17-# (and other numbers): Respawn point
+        # 17-# (and other numbers): Start? Warp?
         # 63-# Start?
         for sprtype in [17, 63]:
             for subtype in range(-1, 11):
