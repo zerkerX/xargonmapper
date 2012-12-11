@@ -1,1 +1,3 @@
-python xargonmapper.py Xargon/GRAPHICS.XR1 Xargon/TILES.XR1 Xargon/BOARD_??.XR1 Xargon/MAP.XR1 Xargon/INTRO.XR1 Xargon/DEMO*.XR1 Xargon/STORY.XR1
+#!/bin/sh
+xargpath=Xargon
+python xargonmapper.py $xargpath/GRAPHICS.XR1 $xargpath/TILES.XR1 $xargpath/BOARD_??.XR1 $xargpath/MAP.XR1 $xargpath/INTRO.XR1 $xargpath/DEMO*.XR1 $xargpath/STORY.XR1

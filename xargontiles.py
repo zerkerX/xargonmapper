@@ -16,19 +16,30 @@
 # You should have received a copy of the GNU General Public License along
 # with Xargon Mapper Mapper.
 # If not, see <http://www.gnu.org/licenses/>.
-import struct, sys, os, pdb, csv
-from PIL import Image, ImageFont, ImageDraw
+""" Module for handling Xargon TILES files """
+
+import struct, sys, os, csv
 
 class tilefile(object):
-    debugfont = ImageFont.load("font1.pil")
-
+    """ A Xargon TILES file, which contains the mapping between the tile
+    index found in a map, and the record and field number in the
+    GRAPHICS file corresponding to that tile.
+    """
     def __init__(self, filename):
+        """ Loads the given TILES file. """
         filesize = os.path.getsize(filename)
         infile = open(filename, 'rb')
 
         self.tiles = []
         self.lookup = {}
 
+        # A Tiles file is just a series of lookup records. The field
+        # order is:
+        # int16 Tile number
+        # int16 Record number
+        # int16 Unknown flag
+        # int8  String length
+        # char* Tile name
         commonheader = '<3HB'
         while infile.tell() < filesize:
             headerdata = struct.unpack(commonheader,
@@ -40,17 +51,23 @@ class tilefile(object):
             self.lookup[headerdata[0]] = headerdata[1]
 
     def gettile(self, graphics, tilenum):
+        """ Finds the correct tile image from the provided graphics
+        object corresponding to the provided tile number.
+        """
+        # Most tiles numbers appear to be offset by 0xC000, for some reason.
         if tilenum < 0xC000:
             graphindex = self.lookup[tilenum]
         else:
             graphindex = self.lookup[tilenum - 0xC000]
 
+        # The graphics record lookup is also offset by 64.
         recnum = graphindex / 256 - 64
         recindex = graphindex % 256
 
         return graphics.records[recnum].images[recindex]
 
     def debug_csv(self, filename):
+        """ Writes a debug csv containing the fields in this TILES file."""
         with open(filename, 'wb') as csvfile:
             writer = csv.writer(csvfile)
             for recnum, tiledata in enumerate(self.tiles):
@@ -60,7 +77,9 @@ class tilefile(object):
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print """Usage: python xargontiles.py [Tiles File]
-TODO
+
+Generates a debug CSV file for the mapping specified in the given
+TILES file from Xargon. Output is written to tiles.csv.
 """
     else:
         for filename in sys.argv[1:]:

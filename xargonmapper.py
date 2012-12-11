@@ -16,7 +16,11 @@
 # You should have received a copy of the GNU General Public License along
 # with Xargon Mapper Mapper.
 # If not, see <http://www.gnu.org/licenses/>.
-import sys, pdb, os
+""" This is the Xargon Mapper script, which generates an image map of a
+level in Xargon.
+"""
+
+import sys, os
 from PIL import Image
 from xargonmap import xargonmap, objrecord
 from xargongraphics import imagefile, createpath
@@ -24,11 +28,23 @@ from xargontiles import tilefile
 from spritedb import spritedb
 
 class xargonmapper(object):
-
+    """ The main Xargon mapper class. This will generate
+    a map image for a given Xargon stage.
+    """
     def __init__(self, graphics, tiledata, mapdata):
+        """ Initializes and generates a map image for the provided map.
+
+        graphics -- a xargongraphics object representing all the
+                    available image records for this episode of Xargon.
+        tiledata -- a xargontile objrect containing the tile to image
+                    mappings for this episode of Xargon.
+        mapdata -- a xargonmap object to generate an image map for.
+        """
+
         self.name = mapdata.name
         self.epnum = mapdata.epnum
 
+        # Select the correct colour palette.
         if self.epnum == 2:
             # Episode 2
             if self.name.upper() in ['BOARD_01', 'BOARD_08',
@@ -94,6 +110,10 @@ class xargonmapper(object):
             sprites.drawsprite(self.mappicture, objrecord, mapdata)
 
     def preprocessmap(self, mapdata):
+        """ Performs some minor corrections on the map in order to
+        work around some incomplete interpretations, and also to
+        ensure a cleaner map image.
+        """
         switchlocations = []
         doorinfos = []
 
@@ -138,6 +158,9 @@ class xargonmapper(object):
                 0, 0, 0, 0, 0, 0, 0, 0) ))
 
     def save(self):
+        """ Saves the generated map to a folder based on episode,
+        and name based on the input map filename.
+        """
         epfolder = 'Episode{}'.format(self.epnum)
         createpath(epfolder)
         self.mappicture.save(os.path.join(epfolder, self.name + '.png'))
@@ -146,7 +169,11 @@ class xargonmapper(object):
 if __name__ == "__main__":
     if len(sys.argv) < 3:
         print """Usage: python xargonmapper.py [Graphics File] [Tiles File] [Map File(s)...]
-TODO
+
+Generates map images for every Xargon map file indicated. Requires the
+corresponding GRAPHICS file for the images to use, and the TILES file
+for the map tile to graphics resource mapping. All files should be from
+the same Episode of Xargon.
 """
     else:
         xargonimages = imagefile(sys.argv[1])

@@ -17,25 +17,34 @@
 # with Xargon Mapper Mapper.
 # If not, see <http://www.gnu.org/licenses/>.
 
-# Lookup is keyed by sprite ID and contains a tuple of record number
-# and sprite number inside the record
+""" Module containing the sprite database """
 import traceback
 from PIL import ImageFont, ImageDraw
 
 markupfont = ImageFont.load("font2.pil")
 
 class spritedb(object):
+    """ The sprite database is a database of all known Xargon sprites.
+    It provides a lookup from the sprite ID and sub-id to the correct
+    sprite type.
+    """
 
     def addsprite(self, sprtype, subtype, sprite):
+        """ Adds a sprite into the database. Creates the applicable
+        sub-list as needed.
+
+        sprtype -- the sprite type number (from the map object record)
+        subtype -- the sprite sub-type number (also from the map object record)
+        sprite -- a sprite object describing how to draw this sprite.
+        """
         if sprtype not in self.sprites:
             self.sprites[sprtype] = {}
         self.sprites[sprtype][subtype] = sprite
 
-    def debug__init__(self, graphics):
-        self.sprites = {}
-        self.graphics = graphics
-
     def __init__(self, graphics, epnum):
+        """ Loads the sprite database according to the provided
+        graphics file and episode number.
+        """
         self.sprites = {}
 
         # Manually-defined sprites (i.e. special handling needed
@@ -469,15 +478,23 @@ class spritedb(object):
         self.graphics = graphics
 
     def drawsprite(self, mappicture, objrec, mapdata):
+        """ Draws the sprite described by the map object record into the
+        map image.
+
+        mappicture -- the in-progress map image
+        objrec -- the object record for the sprite to be drawn
+        mapdata -- a reference back to the data that is being mapped.
+        """
         try:
+            # Create a debug sprite when a sprite is unknown
             if objrec.sprtype not in self.sprites or \
                     objrec.subtype not in self.sprites[objrec.sprtype]:
                 self.addsprite(objrec.sprtype, objrec.subtype, sprite(
                     self.graphics.debugimage(objrec.sprtype, objrec.subtype,
                     objrec.width, objrec.height)))
 
+            # Draw the sprite
             self.sprites[objrec.sprtype][objrec.subtype].draw(mappicture, objrec, mapdata)
-
 
         except:
             print "Problem with Sprite {}, Type {}, Appearance {}, Variant {} at ({}, {})".format(
@@ -487,8 +504,25 @@ class spritedb(object):
 
 
 class sprite(object):
+    """ Sprite object which represents a standard Xargon sprite. It
+    contains enough information to render the sprite into the map.
+    """
     def __init__(self, image, xoffs=0, yoffs=0, hidelabel=False,
             labelpref='', labeloffs=(-8, -8)):
+        """ Initializes this sprite according to the following info:
+
+        image -- the PIL image for the sprite
+        xoffs -- an X offset (in pixels) to shift this sprite by
+        yoffs -- an Y offset (in pixels) to shift this sprite by
+        hidelabel -- if true, and this sprite has an info value
+                     (typically for switches), it is still not drawn.
+        labelpref -- if a label is drawn for this sprite, this prefix
+                     text is added first.
+        labeloffs -- a tuple specifying how far from the upper-left
+                     corner of the sprite to start the upper-left corner
+                     of the label text.
+        """
+
         self.image = image
         self.xoffs = xoffs
         self.yoffs = yoffs
@@ -497,6 +531,13 @@ class sprite(object):
         self.labeloffs = labeloffs
 
     def draw(self, mappicture, objrec, mapdata):
+        """ Draws this sprite into the in-progress map image:
+
+        mappicture -- the in-progress map image
+        objrec -- the object record for the sprite to be drawn
+        mapdata -- a reference back to the data that is being mapped.
+        """
+
         # When pasting masked images, need to specify the mask for the paste.
         # RGBA images can be used as their own masks.
         mappicture.paste(self.image, (objrec.x +self.xoffs,
@@ -519,11 +560,33 @@ class sprite(object):
 
 
 class textsprite(sprite):
+    """ A sprite intended to draw text into the map """
+
     def __init__(self, font, graphics):
+        """ Initializes this sprite according to the following info:
+
+        image -- the PIL image for the sprite
+        xoffs -- an X offset (in pixels) to shift this sprite by
+        yoffs -- an Y offset (in pixels) to shift this sprite by
+        hidelabel -- if true, and this sprite has an info value
+                     (typically for switches), it is still not drawn.
+        labelpref -- if a label is drawn for this sprite, this prefix
+                     text is added first.
+        labeloffs -- a tuple specifying how far from the upper-left
+                     corner of the sprite to start the upper-left corner
+                     of the label text.
+        """
         self.font = font
         self.graphics = graphics
 
     def draw(self, mappicture, objrec, mapdata):
+        """ Draws this sprite into the in-progress map image:
+
+        mappicture -- the in-progress map image
+        objrec -- the object record for the sprite to be drawn
+        mapdata -- a reference back to the data that is being mapped.
+        """
+
         pen = ImageDraw.Draw(mappicture)
 
         if objrec.appearance == 8:
@@ -538,8 +601,32 @@ class textsprite(sprite):
 
 
 class variablesprite(sprite):
+    """ A sprite whos apperance changes due to some field other than the
+    sub-type. The sprite is indexed according to the specified field
+    and the correct image is drawn into the world.
+    """
+
     def __init__(self, imagelookup, contents=None, field='appearance',
             offsets=None, hidelabel=False, labelpref='', labeloffs=(-8, -8)):
+        """ Initializes this variable sprite according to the following info:
+
+        imagelookup -- A dictionary of PIL images to use, keyed by
+                       numbers in the lookup field of the object record.
+        contents -- For treasure boxes. This is a secondary image that
+                    is drawn above the main image to indicate what this
+                    box actually contains.
+        offsets -- a lookup of offset tuples, keyed by the numbers in
+                   the lookup field of the object record. The selected
+                   offset is used to shift the resulting image.
+        hidelabel -- if true, and this sprite has an info value
+                     (typically for switches), it is still not drawn.
+        labelpref -- if a label is drawn for this sprite, this prefix
+                     text is added first.
+        labeloffs -- a tuple specifying how far from the upper-left
+                     corner of the sprite to start the upper-left corner
+                     of the label text.
+        """
+
         # Create a lookup of possible boxes
         self.types = imagelookup
         self.xoffs = 0
@@ -552,6 +639,13 @@ class variablesprite(sprite):
         self.labeloffs = labeloffs
 
     def draw(self, mappicture, objrec, mapdata):
+        """ Draws this sprite into the in-progress map image:
+
+        mappicture -- the in-progress map image
+        objrec -- the object record for the sprite to be drawn
+        mapdata -- a reference back to the data that is being mapped.
+        """
+
         # Pick the correct image then use the parent routine to draw the box
         self.image = self.types[objrec.__dict__[self.field]]
         if self.offsets != None:
