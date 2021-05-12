@@ -33,7 +33,7 @@ class xargonmap(object):
             mapfile.read(struct.calcsize(pattern)) )
 
         # Decode the object header then the object list
-        objrecstruct = '<B12h2B2H'
+        objrecstruct = '<B15h'
 
         (numobjs,) = struct.unpack('<H', mapfile.read(2) )
 
@@ -56,8 +56,16 @@ class xargonmap(object):
             mapfile.read(1)
             sizebytes = mapfile.read(2)
 
+        # String reference lookup table. This is a bit of a hack for now.
+        # Sort all known string references in reverse order:
+        self.stringlookup = [record.stringref for record in self.objs if record.stringref > 0]
+        self.stringlookup.sort(reverse=True)
+
         mapfile.close()
 
+    def getstring(self, stringref):
+        strindex = self.stringlookup.index(stringref)
+        return self.strings[strindex]
 
     def debugcsv(self):
         # Remember that the map is height-first. We need to convert to
@@ -93,8 +101,9 @@ class xargonmap(object):
 class objrecord(object):
     def __init__(self, record):
         self.rawdata = record
-        (self.sprtype, self.x, self.y) = record[0:3]
+        (self.sprtype, self.x, self.y, self.colour) = record[0:4]
         (self.width, self.height, self.subtype) = record[5:8]
+        self.stringref = record[13]
 
 
 if __name__ == "__main__":

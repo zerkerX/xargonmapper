@@ -35,7 +35,7 @@ class xargonmapper(object):
                 (x*16, y*16) )
 
         for objrecord in mapdata.objs:
-            sprites.drawsprite(self.mappicture, objrecord)
+            sprites.drawsprite(self.mappicture, objrecord, mapdata)
 
     def save(self):
         self.mappicture.save(self.name + '.png')

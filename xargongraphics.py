@@ -63,6 +63,7 @@ class imagefile(object):
 
         palimage = Image.open('screeny.png')
         palette1 = palimage.getpalette()
+        self.palette = palette1
 
         palettealt = self.records[5].getpalette()
         palette2 = self.records[53].getpalette()
@@ -86,6 +87,10 @@ class imagefile(object):
         createpath(outpath)
         for recnum, record in enumerate(self.records):
             record.save(os.path.join(outpath, '{:02}-{}'.format(recnum, record.offset)))
+
+    def getcolour(self, index):
+        return tuple(self.palette[index*3:index*3+3])
+
 
 
 class imagerecord(object):

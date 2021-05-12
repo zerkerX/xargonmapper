@@ -6,3 +6,4 @@ dates
 *.pyc
 out.txt
 Xargon.conf
+*.BAT
