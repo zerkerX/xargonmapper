@@ -497,9 +497,9 @@ class spritedb(object):
             self.sprites[objrec.sprtype][objrec.subtype].draw(mappicture, objrec, mapdata)
 
         except:
-            print "Problem with Sprite {}, Type {}, Appearance {}, Variant {} at ({}, {})".format(
+            print("Problem with Sprite {}, Type {}, Appearance {}, Variant {} at ({}, {})".format(
                 objrec.sprtype, objrec.subtype, objrec.appearance, objrec.variant,
-                objrec.x, objrec.y)
+                objrec.x, objrec.y))
             traceback.print_exc()
 
 

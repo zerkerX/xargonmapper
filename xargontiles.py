@@ -76,11 +76,11 @@ class tilefile(object):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print """Usage: python xargontiles.py [Tiles File]
+        print("""Usage: python xargontiles.py [Tiles File]
 
 Generates a debug CSV file for the mapping specified in the given
 TILES file from Xargon. Output is written to tiles.csv.
-"""
+""")
     else:
         for filename in sys.argv[1:]:
             xargontiles = tilefile(filename)

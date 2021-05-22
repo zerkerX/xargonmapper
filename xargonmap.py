@@ -141,7 +141,7 @@ class objrecord(object):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print """Usage: python xargonmap.py [Map File(s)]
+        print("""Usage: python xargonmap.py [Map File(s)]
 
 Generates the following debug information for each specified Xargon map
 file:
@@ -156,7 +156,7 @@ file:
 [mapname]_strings.csv : A listing of all the strings in the map, as well
                         as the guessed mapping to object reference
                         values.
-"""
+""")
     else:
         for filename in sys.argv[1:]:
             themap = xargonmap(filename)

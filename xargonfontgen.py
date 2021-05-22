@@ -95,13 +95,13 @@ BITMAP\n""".format(charnum, self.size))
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print """Usage: python xargongraphics.py [Graphics File]
+        print("""Usage: python xargongraphics.py [Graphics File]
 
 Generates BDF fotn files for the two identified fonts stored in the
 Xargon GRAPHICS file. The BDF files can then be converted to .pil files
 for use in the main mapper via the pilfont.py script. The BDF files can
 also be used in any software that supports BDF.
-"""
+""")
     else:
         for filename in sys.argv[1:]:
             graphics = imagefile(filename)

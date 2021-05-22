@@ -239,9 +239,9 @@ class imagerecord(object):
             # Check to see if we actually loaded all data from this record
             leftover = self.offset + self.size - self.filedata.tell()
             if leftover > 0:
-                print "Record at offset {} has {} bytes unaccounted for.".format(self.offset, leftover)
+                print("Record at offset {} has {} bytes unaccounted for.".format(self.offset, leftover))
             elif leftover < 0:
-                print "Record at offset {} read {} bytes beyond its boundary.".format(self.offset, -leftover)
+                print("Record at offset {} read {} bytes beyond its boundary.".format(self.offset, -leftover))
 
     def changepalette(self, palette):
         """ Changes the palette used by this record object to
@@ -286,7 +286,7 @@ class imagerecord(object):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print """Usage: python xargongraphics.py [Graphics File]
+        print("""Usage: python xargongraphics.py [Graphics File]
 
 Extracts all graphics resources from the specified GRAPHICS file from
 Xargon. Output is stored in the Episode#Images and
@@ -295,7 +295,7 @@ input file. The OriginalImages folder contains the original 256-colour
 images without any additional processing, while the Images folder
 contains 32-bit RGBA images after colour index 0 has been set
 transparent.
-"""
+""")
     else:
         for filename in sys.argv[1:]:
             xargonimages = imagefile(filename)

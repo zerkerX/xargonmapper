@@ -168,13 +168,13 @@ class xargonmapper(object):
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print """Usage: python xargonmapper.py [Graphics File] [Tiles File] [Map File(s)...]
+        print("""Usage: python xargonmapper.py [Graphics File] [Tiles File] [Map File(s)...]
 
 Generates map images for every Xargon map file indicated. Requires the
 corresponding GRAPHICS file for the images to use, and the TILES file
 for the map tile to graphics resource mapping. All files should be from
 the same Episode of Xargon.
-"""
+""")
     else:
         xargonimages = imagefile(sys.argv[1])
 
@@ -182,7 +182,7 @@ the same Episode of Xargon.
         for filename in sys.argv[3:]:
             themap = xargonmap(filename)
 
-            print "Generating Map '{}'".format(themap.name)
+            print("Generating Map '{}'".format(themap.name))
             mapper = xargonmapper(xargonimages, tiledata, themap)
-            print "Saving Map '{}'".format(themap.name)
+            print("Saving Map '{}'".format(themap.name))
             mapper.save()
