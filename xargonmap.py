@@ -1,5 +1,5 @@
-#!/usr/bin/python
-# Copyright 2012 Ryan Armstrong
+#!/usr/bin/python3
+# Copyright 2012, 2021 Ryan Armstrong
 #
 # This file is part of Xargon Mapper Mapper.
 #
@@ -90,23 +90,23 @@ class xargonmap(object):
         """ Generates debug CSV files from the data in this map. """
         # Remember that the map is height-first. We need to convert to
         # width-first. This only outputs tile data for now.
-        with open(self.name + '.csv', 'wb') as csvfile:
+        with open(self.name + '.csv', 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             for y in range(64):
                 writer.writerow([self.tiles[x*64+y] for x in range(128)])
 
         # Next, output the object list:
-        with open(self.name + '_objs.csv', 'wb') as csvfile:
+        with open(self.name + '_objs.csv', 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             writer.writerows([obj.rawdata for obj in self.objs])
 
         # The header and strings list:
-        with open(self.name + '_info.csv', 'wb') as csvfile:
+        with open(self.name + '_info.csv', 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             writer.writerow(list(self.unknown) + self.strings)
 
         # Standalone debug string list:
-        with open(self.name + '_strings.csv', 'wb') as csvfile:
+        with open(self.name + '_strings.csv', 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             for stringnum, lookupval in enumerate(self.stringlookup):
                 writer.writerow([stringnum, lookupval, self.strings[stringnum]])
@@ -119,12 +119,13 @@ class xargonmap(object):
         # Start by pre-creating an empty list of zeroes then copy it in
         visualdata = [None] * (64*128)
         for index in range(64*128):
-            visualdata[index] = (self.tiles[index]%256, self.tiles[index]/256, 0)
+            visualdata[index] = (self.tiles[index]%256, self.tiles[index]//256, 0)
 
         # Tell PIL to interpret the map data as a RAW image:
         mapimage = Image.new("RGB", (64, 128) )
         mapimage.putdata(visualdata)
-        ImageOps.mirror(mapimage.rotate(-90)).save(self.name + '_flat.png')
+        ImageOps.mirror(mapimage.rotate(-90, expand=True)).save(self.name + '_flat.png')
+        # ~ mapimage.save(self.name + '_flat.png')
 
 
 class objrecord(object):
