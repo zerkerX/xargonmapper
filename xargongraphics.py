@@ -1,7 +1,7 @@
-#!/usr/bin/python
-# Copyright 2012 Ryan Armstrong
+#!/usr/bin/python3
+# Copyright 2012, 2021 Ryan Armstrong
 #
-# This file is part of Xargon Mapper Mapper.
+# This file is part of Xargon Mapper.
 #
 # Xargon Mapper Mapper is free software: you can redistribute
 # it and/or modify it under the terms of the GNU General Public License
@@ -105,7 +105,7 @@ class imagefile(object):
 
     def debug_csv(self, filename):
         """ Writes a debug CSV containing info on the records in this file."""
-        with open(filename, 'wb') as csvfile:
+        with open(filename, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             for recnum, record in enumerate(self.records):
                 writer.writerow([recnum, record.offset, record.size] + list(record.header))
@@ -230,7 +230,7 @@ class imagerecord(object):
                     self.filedata.seek(width*height, os.SEEK_CUR)
                     skipimages = skipimages - 1
                 elif width > 0 and height > 0:
-                    tile = Image.fromstring("P", (width, height),
+                    tile = Image.frombytes("P", (width, height),
                         self.filedata.read(width*height))
                     tile.putpalette(palette)
                     self.origimages.append(tile)
