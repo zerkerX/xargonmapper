@@ -10,5 +10,10 @@ dates
 out.txt
 Xargon.conf
 *.BAT
-debug
-Episode?debug
+debug/
+Episode?debug/
+Episode?Images/
+Episode?OriginalImages/
+Xargon/
+font1/
+font2/
