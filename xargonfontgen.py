@@ -1,7 +1,7 @@
-#!/usr/bin/python
-# Copyright 2012 Ryan Armstrong
+#!/usr/bin/python3
+# Copyright 2012, 2021 Ryan Armstrong
 #
-# This file is part of Xargon Mapper Mapper.
+# This file is part of Xargon Mapper.
 #
 # Xargon Mapper Mapper is free software: you can redistribute
 # it and/or modify it under the terms of the GNU General Public License
@@ -95,7 +95,7 @@ BITMAP\n""".format(charnum, self.size))
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("""Usage: python xargongraphics.py [Graphics File]
+        print("""Usage: python xargonfontgen.py [Graphics File]
 
 Generates BDF fotn files for the two identified fonts stored in the
 Xargon GRAPHICS file. The BDF files can then be converted to .pil files
@@ -107,7 +107,7 @@ also be used in any software that supports BDF.
             graphics = imagefile(filename)
             font1 = xargonfont(graphics, 1, 'xargon-font1')
             font2 = xargonfont(graphics, 2, 'xargon-font1')
-            #font1.debugimages('font1')
-            #font2.debugimages('font2')
+            # ~ font1.debugimages('font1')
+            # ~ font2.debugimages('font2')
             font1.createbdf('font1.bdf')
             font2.createbdf('font2.bdf')
