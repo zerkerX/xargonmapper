@@ -1,7 +1,7 @@
-#!/usr/bin/python
-# Copyright 2012 Ryan Armstrong
+#!/usr/bin/python3
+# Copyright 2012, 2021 Ryan Armstrong
 #
-# This file is part of Xargon Mapper Mapper.
+# This file is part of Xargon Mapper.
 #
 # Xargon Mapper Mapper is free software: you can redistribute
 # it and/or modify it under the terms of the GNU General Public License
@@ -100,7 +100,7 @@ class xargonmapper(object):
 
         for index, tileval in enumerate(mapdata.tiles):
             # Remember: maps are height first
-            (x, y) = (index/64, index%64)
+            (x, y) = (index//64, index%64)
             tileimg = tiledata.gettile(graphics, tileval)
             self.mappicture.paste(tileimg, (x*16, y*16), tileimg )
 
