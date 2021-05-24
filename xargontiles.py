@@ -1,5 +1,5 @@
-#!/usr/bin/python
-# Copyright 2012 Ryan Armstrong
+#!/usr/bin/python3
+# Copyright 2012, 2021 Ryan Armstrong
 #
 # This file is part of Xargon Mapper Mapper.
 #
@@ -45,8 +45,11 @@ class tilefile(object):
             headerdata = struct.unpack(commonheader,
                 infile.read(struct.calcsize(commonheader)) )
             stringlen = headerdata[3]
-            self.tiles.append(headerdata[0:3] +
-                struct.unpack('<{}s'.format(stringlen), infile.read(stringlen)) )
+            stringdata = struct.unpack('<{}s'.format(stringlen), 
+                infile.read(stringlen))
+            stringdata = (stringdata[0].decode(), )
+            
+            self.tiles.append(headerdata[0:3] + stringdata)
 
             self.lookup[headerdata[0]] = headerdata[1]
 
@@ -61,14 +64,14 @@ class tilefile(object):
             graphindex = self.lookup[tilenum - 0xC000]
 
         # The graphics record lookup is also offset by 64.
-        recnum = graphindex / 256 - 64
+        recnum = graphindex // 256 - 64
         recindex = graphindex % 256
 
         return graphics.records[recnum].images[recindex]
 
     def debug_csv(self, filename):
         """ Writes a debug csv containing the fields in this TILES file."""
-        with open(filename, 'wb') as csvfile:
+        with open(filename, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
             for recnum, tiledata in enumerate(self.tiles):
                 writer.writerow((recnum,) + tiledata)
