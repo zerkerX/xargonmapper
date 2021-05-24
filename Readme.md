@@ -3,17 +3,18 @@ About and Dependencies
 
 This is a series of Python scripts to generate maps of Xargon, as well 
 as extract most of the Xargon image resources. These scripts require 
-[the Python Imaging Library (PIL)][pil] and [Python 2.x][py] (tested 
-with Python 2.7.3). PIL unfortunately does not yet support Python 3, 
-which prevents these scripts from being forward-compatible at this 
-time.
+[the Pillow fork of the Python Imaging Library (PIL)][pil] and [Python 
+3.x][py]. This was tested with Python 3.9.2, but it does not use any 
+recently-introduced features. As such, it should run with just about 
+any version of Python 3. At the time of writing, the oldest version of 
+Python still receiving updates is 3.6, so I do not recommend anything 
+older.
 
-Windows users should be able to download Python and PIL from the above
-links. Most Linux/Unix varients should be able to install Python and PIL
-via your package manager of choice; Ubuntu users can install the
-**python** and **python-imaging** libraries. OSX users should already
-have Python, but you may need to compile PIL yourself via the source
-download at the PIL website.
+Windows and macOS users should be able to download Python from the 
+above links and use ``pip`` to install Pillow. Most Linux/Unix varients 
+should be able to install Python and Pillow via your package manager of 
+choice; Ubuntu users can install the **python3** and **python3-pil** 
+libraries.
 
 The scripts also obviously require **Xargon**, either the shareware or 
 full versions. The full version [has been released as 
@@ -29,7 +30,7 @@ Please note the **palimage\#.png** image files are used to obtain the
 assorted Xargon colour paletted variations, and are required for this
 tool to work.
 
-[pil]: http://www.pythonware.com/products/pil/index.htm
+[pil]: https://pillow.readthedocs.io/en/stable/
 [py]:  http://python.org/
 [xargon]: http://www.classicdosgames.com/game/Xargon.html
 [vgmaps]: http://www.vgmaps.com/forums/index.php?topic=1867.0
